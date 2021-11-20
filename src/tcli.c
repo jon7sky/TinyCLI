@@ -39,6 +39,7 @@ static void tcli_tokenize(char *buf)
             break;
         }
     }
+    *t++ = 0;
     *t = 0;
 
     puts("Tokenized command line:");
@@ -50,53 +51,80 @@ static void tcli_tokenize(char *buf)
     }
 }
 
-static tcli_cmd_def_t *find_cmd_def(const char **buf, tcli_def_t *tcli_def)
+int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {
     int i;
+    int cmd_id;
     const tcli_cmd_def_t *cmd_def;
-    const char *s;
-    const char *cmd;
-
-    puts("Searching through list of commands...\n");
-    for (i = 0, cmd_def = tcli_def->cmd_def; i < CMD_ID_CNT; i++, cmd_def++)
-    {
-        printf("Trying cmd ID %d\n", i);
-        s = *buf;
-        cmd = cmd_def->str;
-        while (*cmd)
-        {
-            printf("Matching '%s' with '%s': ", s, cmd);
-            if (strcmp(s, cmd) == 0)
-            {
-                printf("yes\n");
-            }
-            else
-            {
-                printf("no\n");
-                s = NULL;
-                break;
-            }
-            s += strlen(s) + 1;
-            cmd += strlen(cmd) + 1;
-        }
-        if (s)
-        {
-            *buf = s;
-            return cmd_def;
-        }
-    }
-    return NULL;
-}
-
-
-int tcli_parse(char *buf, const tcli_def_t *tcli_def)
-{
-    const tcli_cmd_def_t *cmd_def;
+    const tcli_arg_def_t *arg_def;
+    uint32_t option_bit;
+    uint32_t options_provided;
+    uint32_t options_required;
 
     tcli_tokenize(buf);
-    cmd_def = find_cmd_def(&buf, tcli_def);
-    printf("buf is now '%s'\n", buf);
+    puts("Searching through list of commands...\n");
+    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
+    {
+    	if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
+    	{
+    		break;
+    	}
+    }
+    if (cmd_id == CMD_ID_CNT)
+    {
+    	printf("Command not found\n");
+    	return TCLI_ERROR_COMMAND_NOT_FOUND;
+    }
+    printf("Found command ID %d\n", cmd_id);
+    buf += cmd_def->slen;
+    options_provided = 0;
+    options_required = 0;
+    for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt; i++, arg_def++)
+    {
+        options_required |= (arg_def->required << arg_def->mutex_idx);
+    }
 
+    while (*buf)
+    {
+        printf("Next arg is '%s'\n", buf);
+        option_bit = 0;
+        for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt && option_bit == 0; i++, arg_def++)
+        {
+            printf("    Considering arg '%s'\n", arg_def->s);
+            switch (arg_def->type)
+            {
+            case ARG_TYPE_OPTION_BOOL:
+                if (strcmp(buf, arg_def->s) == 0)
+                {
+                    printf("That's it\n");
+                    option_bit = (1 << arg_def->mutex_idx);
+                    args->generic.bools |= (1 << arg_def->opt_idx);
+                }
+                break;
+            case ARG_TYPE_OPTION_HAS_VALUE:
+                if (strncmp(buf, arg_def->s, strlen(arg_def->s)) == 0)
+                {
+                    printf("That's it\n");
+                    option_bit = (1 << arg_def->mutex_idx);
+                    args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        if (option_bit & options_provided)
+        {
+            return TCLI_ERROR_OPTION_CONFLICT;
+        }
+        options_provided |= option_bit;
+        buf += strlen(buf) + 1;
+    }
+    if ((options_required & options_provided) != options_required)
+    {
+        printf("Required option not provided\n");
+        return TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED;
+    }
 
-    return 0;
+    return cmd_id;
 }
