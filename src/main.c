@@ -19,9 +19,10 @@ int main(int argc, char *argv[])
 
     for (cmd = &test_cmds[0]; *cmd; cmd++)
     {
+        printf("Command: %s\n", *cmd);
         strcpy(buf, *cmd);
         rc = tcli_cmd_handle(buf);
-        printf("Command returned %d\n", rc);
+        printf("Command returned %d\n\n", rc);
     }
 
     return 0;

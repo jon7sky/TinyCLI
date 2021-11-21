@@ -2,6 +2,14 @@
 #include <string.h>
 #include "tcli.h"
 
+#define DEBUG 0
+
+#if DEBUG
+#define DEBUG_PRINTF(...) printf(__VA_ARGS__)
+#else
+#define DEBUG_PRINTF(...)
+#endif
+
 
 static void tcli_tokenize(char *buf)
 {
@@ -38,6 +46,7 @@ static void tcli_tokenize(char *buf)
     *t++ = 0;
     *t = 0;
 
+#if DEBUG
     puts("Tokenized command line:");
     t = buf;
     while (*t)
@@ -45,6 +54,7 @@ static void tcli_tokenize(char *buf)
         printf("\t%s\n", t);
         t += strlen(t) + 1;
     }
+#endif
 }
 
 int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
@@ -57,7 +67,7 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
     uint32_t options_required;
 
     tcli_tokenize(buf);
-    puts("Searching through list of commands...\n");
+    DEBUG_PRINTF("Searching through list of commands...\n");
     for (cmd_id = 0; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
     {
     	if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
@@ -67,10 +77,10 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
     }
     if (cmd_id == CMD_ID_CNT)
     {
-    	printf("Command not found\n");
+        DEBUG_PRINTF("Command not found\n");
     	return TCLI_ERROR_COMMAND_NOT_FOUND;
     }
-    printf("Found command ID %d\n", cmd_id);
+    DEBUG_PRINTF("Found command ID %d\n", cmd_id);
     buf += cmd_def->slen;
     options_provided = 0;
     options_required = 0;
@@ -81,17 +91,17 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
 
     while (*buf)
     {
-        printf("Next arg is '%s'\n", buf);
+        DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
         for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt && option_bit == 0; i++, arg_def++)
         {
-            printf("  Considering arg '%s'\n", arg_def->s);
+            DEBUG_PRINTF("  Considering arg '%s'\n", arg_def->s);
             switch (arg_def->type)
             {
             case ARG_TYPE_OPTION_BOOL:
                 if (strcmp(buf, arg_def->s) == 0)
                 {
-                    printf("That's it\n");
+                    DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << arg_def->mutex_idx);
                     args->generic.bools |= (1 << arg_def->opt_idx);
                 }
@@ -99,7 +109,7 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
             case ARG_TYPE_OPTION_HAS_VALUE:
                 if (strncmp(buf, arg_def->s, strlen(arg_def->s)) == 0)
                 {
-                    printf("That's it\n");
+                    DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << arg_def->mutex_idx);
                     args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
                 }
@@ -110,7 +120,7 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
         }
         if (option_bit & options_provided)
         {
-            printf("Option conflict\n");
+            DEBUG_PRINTF("Option conflict\n");
             return TCLI_ERROR_OPTION_CONFLICT;
         }
         options_provided |= option_bit;
@@ -118,7 +128,7 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
     }
     if ((options_required & options_provided) != options_required)
     {
-        printf("Required option not provided\n");
+        DEBUG_PRINTF("Required option not provided\n");
         return TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED;
     }
 
