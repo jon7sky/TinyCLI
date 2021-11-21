@@ -47,11 +47,10 @@ static void tcli_tokenize(char *buf)
     }
 }
 
-int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
+int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
 {
     int i;
     int cmd_id;
-    const tcli_cmd_def_t *cmd_def;
     const tcli_arg_def_t *arg_def;
     uint32_t option_bit;
     uint32_t options_provided;
@@ -59,7 +58,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
     tcli_tokenize(buf);
     puts("Searching through list of commands...\n");
-    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
+    for (cmd_id = 0; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
     {
     	if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
     	{
