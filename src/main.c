@@ -34,7 +34,16 @@ int main(int argc, char *argv[])
 {
     char buf[1000];
 
-    strcpy(buf, "make burger   --white --ketchup --mustard --name=BillyJoeBob");
+    strcpy(buf, "make burger   --white --ketchup --mustard --name='Billy Joe Bob'");
+    tcli_parse(buf, &tcli_def, &args);
+
+    strcpy(buf, "make burger   --white --wheat --ketchup --mustard --name=BillyJoeBob");
+    tcli_parse(buf, &tcli_def, &args);
+
+    strcpy(buf, "make burger   --ketchup --mustard --name=BillyJoeBob");
+    tcli_parse(buf, &tcli_def, &args);
+
+    strcpy(buf, "make fries --extra-salt --extra-salt");
     tcli_parse(buf, &tcli_def, &args);
 
     return 0;

@@ -5,38 +5,34 @@
 
 static void tcli_tokenize(char *buf)
 {
-    enum {
-        SKIPPING_SPACES,
-        COPY,
-    } state = SKIPPING_SPACES;
-    char *f = buf;
-    char *t = buf;
+    char *f;
+    char *t;
     char copy_until_char;
 
-    while (*f)
+    for (f = t = buf; *f;)
     {
-        switch (state)
+        while (*f == ' ')
         {
-            case SKIPPING_SPACES:
-            if (*f == ' ')
+            f++;
+        }
+        copy_until_char = ' ';
+        while (*f)
+        {
+            if ((*f == '\'' || *f == '\"') && copy_until_char == ' ')
             {
+                copy_until_char = *f;
+            }
+            else if (*f == copy_until_char)
+            {
+                *t++ = 0;
                 f++;
+                break;
             }
             else
             {
-                copy_until_char = (*f == '\'' || *f == '\"') ? *f++ : ' ';
-                state = COPY;
+                *t++ = *f;
             }
-            break;
-
-            case COPY:
-            if ((*t = *f++) == copy_until_char)
-            {
-                *t = 0;
-                state = SKIPPING_SPACES;
-            }
-            t++;
-            break;
+            f++;
         }
     }
     *t++ = 0;
@@ -90,7 +86,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         option_bit = 0;
         for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt && option_bit == 0; i++, arg_def++)
         {
-            printf("    Considering arg '%s'\n", arg_def->s);
+            printf("  Considering arg '%s'\n", arg_def->s);
             switch (arg_def->type)
             {
             case ARG_TYPE_OPTION_BOOL:
@@ -115,6 +111,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         }
         if (option_bit & options_provided)
         {
+            printf("Option conflict\n");
             return TCLI_ERROR_OPTION_CONFLICT;
         }
         options_provided |= option_bit;
