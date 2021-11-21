@@ -6,10 +6,12 @@
 
 enum
 {
+    TCLI_OK                                     = 0,
     TCLI_ERROR_COMMAND_NOT_FOUND                = -1,
     TCLI_ERROR_OPTION_CONFLICT                  = -2,
     TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED     = -3,
-    TCLI_ERROR_COMMAND_NOT_SUPPORTED            = -4
+    TCLI_ERROR_COMMAND_NOT_SUPPORTED            = -4,
+    TCLI_INTERNAL_ERROR                         = -5
 };
 
 enum
@@ -44,8 +46,7 @@ typedef struct
 
 extern const tcli_cmd_def_t tcli_cmd_def[];
 
-
 int tcli_parse(char *buf, const tcli_cmd_def_t *tcli_cmd_def, tcli_args_t *args);
-int tcli_cmd_handle(char *buf, const tcli_cmd_def_t *tcli_cmd_def, tcli_args_t *args);
+int tcli_cmd_handle(char *buf);
 
 #endif // TCLI_H

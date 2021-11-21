@@ -2,31 +2,42 @@
 #include <string.h>
 #include "tcli.h"
 
-
-#if 0
-const tcli_def_t tcli_def =
-{
-    .cmd_def = &tcli_cmd_def[0]
-};
-#endif
-
 tcli_args_t args;
 
 int main(int argc, char *argv[])
 {
     char buf[1000];
+    const char **cmd;
+    int rc;
 
-    strcpy(buf, "make burger   --white --ketchup --mustard --name='Billy Joe Bob'");
-    tcli_parse(buf, &tcli_cmd_def, &args);
+    const char *test_cmds[] =
+    {
+        "make burger   --white --ketchup --mustard --name='Billy Joe Bob'",
+        "make fries",
+        NULL
+    };
 
-    strcpy(buf, "make burger   --white --wheat --ketchup --mustard --name=BillyJoeBob");
-    tcli_parse(buf, &tcli_cmd_def, &args);
-
-    strcpy(buf, "make burger   --ketchup --mustard --name=BillyJoeBob");
-    tcli_parse(buf, &tcli_cmd_def, &args);
-
-    strcpy(buf, "make fries --extra-salt --extra-salt");
-    tcli_parse(buf, &tcli_cmd_def, &args);
+    for (cmd = &test_cmds[0]; *cmd; cmd++)
+    {
+        strcpy(buf, *cmd);
+        rc = tcli_cmd_handle(buf);
+        printf("Command returned %d\n", rc);
+    }
 
     return 0;
+}
+
+int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
+{
+    printf("Making a burger for '%s'\n", args->name);
+    printf("Bun is %s\n", args->wheat ? "wheat" : "white");
+    if (args->ketchup)
+    {
+        printf("Add ketchup\n");
+    }
+    if (args->mustard)
+    {
+        printf("Add mustard\n");
+    }
+    return TCLI_OK;
 }
