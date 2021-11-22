@@ -2,6 +2,7 @@
 #define TCLI_H
 
 #include <stdint.h>
+#include <string.h>
 #include "tcli_def.h"
 
 enum
@@ -18,7 +19,9 @@ enum
 enum
 {
 	ARG_TYPE_OPTION_BOOL = 0,
-	ARG_TYPE_OPTION_HAS_VALUE
+	ARG_TYPE_OPTION_HAS_VALUE,
+    ARG_TYPE_POSITIONAL,
+    ARG_TYPE_POSITIONAL_MULTI
 };
 
 typedef struct
@@ -47,5 +50,6 @@ extern const tcli_def_t tcli_def;
 
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args);
 int tcli_cmd_handle(char *buf);
+const char *next_arg(const char *arg);
 
 #endif // TCLI_H

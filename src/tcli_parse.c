@@ -122,6 +122,23 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                         args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
                     }
                     break;
+                case ARG_TYPE_POSITIONAL:
+                case ARG_TYPE_POSITIONAL_MULTI:
+                    if (!args->generic.args[arg_def->opt_idx])
+                    {
+                        args->generic.args[arg_def->opt_idx] = buf;
+                        option_bit = (1 << arg_def->mutex_idx);
+                        DEBUG_PRINTF("Positional arg %d filled in\n", arg_def->opt_idx);
+                        if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
+                        {
+                            DEBUG_PRINTF("Assigned multi arg\n");
+                            while (*buf)
+                            {
+                                buf += strlen(buf) + 1;
+                            }
+                        }
+                    }
+                    break;
                 default:
                     break;
                 }
@@ -138,7 +155,10 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             return TCLI_ERROR_OPTION_CONFLICT;
         }
         options_provided |= option_bit;
-        buf += strlen(buf) + 1;
+        if (*buf)
+        {
+            buf += strlen(buf) + 1;
+        }
     }
     if ((options_required & options_provided) != options_required)
     {
@@ -147,4 +167,13 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     }
 
     return cmd_id;
+}
+
+const char *next_arg(const char *arg)
+{
+    if (*arg)
+    {
+        arg += strlen(arg) + 1;
+    }
+    return *arg ? arg : (const char *) 0;
 }
