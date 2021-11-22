@@ -57,18 +57,20 @@ static void tcli_tokenize(char *buf)
 #endif
 }
 
-int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
+int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {
     int i;
     int cmd_id;
     const tcli_arg_def_t *arg_def;
+    const tcli_cmd_def_t *cmd_def;
+    const tcli_cmd_def_t *common_cmd_def = &tcli_def->cmd_def[0];
     uint32_t option_bit;
     uint32_t options_provided;
     uint32_t options_required;
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
-    for (cmd_id = 0; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
+    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
     {
     	if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
     	{
@@ -93,8 +95,9 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
-        for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt && option_bit == 0; i++, arg_def++)
+        for (i = 0; i < (common_cmd_def->arg_def_cnt + cmd_def->arg_def_cnt) && option_bit == 0; i++)
         {
+        	arg_def = i < common_cmd_def->arg_def_cnt ? common_cmd_def->arg_def + i : cmd_def->arg_def + (i - common_cmd_def->arg_def_cnt);
             DEBUG_PRINTF("  Considering arg '%s'\n", arg_def->s);
             switch (arg_def->type)
             {
@@ -117,6 +120,11 @@ int tcli_parse(char *buf, const tcli_cmd_def_t *cmd_def, tcli_args_t *args)
             default:
                 break;
             }
+        }
+        if (!option_bit)
+        {
+            DEBUG_PRINTF("Unknown option\n");
+            return TCLI_ERROR_UNKNOWN_OPTION;        	
         }
         if (option_bit & options_provided)
         {

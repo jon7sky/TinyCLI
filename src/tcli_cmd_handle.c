@@ -1,3 +1,4 @@
+#include <string.h>
 #include "tcli.h"
 
 static tcli_args_t args;
@@ -6,7 +7,8 @@ int tcli_cmd_handle(char *buf)
 {
     int rc;
 
-    rc = tcli_parse(buf, &tcli_cmd_def[0], &args);
+    memset(&args, sizeof(args), 0);
+    rc = tcli_parse(buf, &tcli_def, &args);
     if (rc < 0)
     {
         return rc;

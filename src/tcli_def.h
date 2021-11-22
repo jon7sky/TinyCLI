@@ -21,6 +21,7 @@ typedef struct
 
 typedef struct
 {
+    bool_options_t to_go:1;
     bool_options_t white:1;
     bool_options_t wheat:1;
     bool_options_t ketchup:1;
@@ -30,7 +31,9 @@ typedef struct
 
 typedef struct
 {
+    bool_options_t to_go:1;
     bool_options_t extra_salt:1;
+    char *name;
 } tcli_args_make_fries_t;
 
 typedef union
