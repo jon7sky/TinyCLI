@@ -145,20 +145,20 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 switch (arg_def->type)
                 {
                 case ARG_TYPE_OPTION_BOOL:
-                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || strcmp(buf, &s[arg_def->short_idx]) == 0)
-                    {
-                        DEBUG_PRINTF("That's it\n");
-                        option_bit = (1 << arg_def->mutex_idx);
-                        args->generic.bools |= (1 << arg_def->opt_idx);
-                    }
-                    break;
                 case ARG_TYPE_OPTION_HAS_VALUE:
                     if (strcmp(buf, &s[arg_def->long_idx]) == 0 || strcmp(buf, &s[arg_def->short_idx]) == 0)
                     {
                         DEBUG_PRINTF("That's it\n");
                         option_bit = (1 << arg_def->mutex_idx);
-                        buf += strlen(buf) + 1;
-                        args->generic.args[arg_def->opt_idx] = buf;
+                        if (arg_def->type == ARG_TYPE_OPTION_BOOL)
+                        {
+                            args->generic.bools |= (1 << arg_def->opt_idx);
+                        }
+                        if (arg_def->type == ARG_TYPE_OPTION_HAS_VALUE)
+                        {
+                            buf += strlen(buf) + 1;
+                            args->generic.args[arg_def->opt_idx] = buf;
+                        }
                     }
                     break;
                 case ARG_TYPE_POSITIONAL:
