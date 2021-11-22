@@ -125,7 +125,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     DEBUG_PRINTF("Found command ID %d\n", cmd_id);
     options_provided = 0;
     options_required = 0;
-    for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt; i++, arg_def++)
+    for (i = 0, arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx]; i < cmd_def->arg_def_cnt; i++, arg_def++)
     {
         options_required |= (arg_def->required << arg_def->mutex_idx);
     }
@@ -136,7 +136,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         option_bit = 0;
         for (j = 0; j < 2; j++)
         {
-            arg_def = (j == 0 ? common_cmd_def->arg_def : cmd_def->arg_def);
+            arg_def = (j == 0 ? &tcli_def->arg_def[common_cmd_def->arg_def_idx] : &tcli_def->arg_def[cmd_def->arg_def_idx]);
             arg_def_cnt = (j == 0 ? common_cmd_def->arg_def_cnt : cmd_def->arg_def_cnt);
             for (i = 0; i < arg_def_cnt && option_bit == 0; i++, arg_def++)
             {
