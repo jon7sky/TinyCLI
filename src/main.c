@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 
     const char *test_cmds[] =
     {
-        "make burger   --white --ketchup --mustard --name='Alice Jones'",
-        "m b --wheat --ketchup --mustard --name='Bob Smith'",
+        "make   burger   --white   --ketchup   --mustard   --name='Alice Jones'",
+        "m b -w -k -n 'Bob Smith' -g",
         "make fries",
         "make fries --light-salt",
         "make fries --extra-salt",
@@ -47,6 +47,10 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
     if (args->mustard)
     {
         printf("Add mustard\n");
+    }
+    if (args->to_go)
+    {
+        printf("Order is to-go\n");
     }
     return TCLI_OK;
 }

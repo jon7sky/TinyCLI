@@ -30,7 +30,7 @@ static void tcli_tokenize(char *buf)
             {
                 copy_until_char = *f;
             }
-            else if (*f == copy_until_char)
+            else if (*f == copy_until_char || (*f == '=' && copy_until_char == ' '))
             {
                 *t++ = 0;
                 f++;
@@ -63,7 +63,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_d
     int cmd_id;
     const tcli_cmd_def_t *cd;
     char *b;
-    const char *s = tcli_def->string_tbl;
+    const char *s = tcli_def->cmd_string_tbl;
 
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
     for (i = 0, cd = tcli_def->cmd_def; i < CMD_ID_CNT; i++, cd++)
@@ -113,6 +113,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     uint32_t option_bit;
     uint32_t options_provided;
     uint32_t options_required;
+    const char *s = &tcli_def->arg_string_tbl[0];
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
@@ -140,11 +141,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             arg_def_cnt = (j == 0 ? common_cmd_def->arg_def_cnt : cmd_def->arg_def_cnt);
             for (i = 0; i < arg_def_cnt && option_bit == 0; i++, arg_def++)
             {
-                DEBUG_PRINTF("  Considering arg '%s'\n", arg_def->s);
+                DEBUG_PRINTF("  Considering arg '%s'\n", &s[arg_def->long_idx]);
                 switch (arg_def->type)
                 {
                 case ARG_TYPE_OPTION_BOOL:
-                    if (strcmp(buf, arg_def->s) == 0)
+                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || strcmp(buf, &s[arg_def->short_idx]) == 0)
                     {
                         DEBUG_PRINTF("That's it\n");
                         option_bit = (1 << arg_def->mutex_idx);
@@ -152,11 +153,12 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     }
                     break;
                 case ARG_TYPE_OPTION_HAS_VALUE:
-                    if (strncmp(buf, arg_def->s, strlen(arg_def->s)) == 0)
+                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || strcmp(buf, &s[arg_def->short_idx]) == 0)
                     {
                         DEBUG_PRINTF("That's it\n");
                         option_bit = (1 << arg_def->mutex_idx);
-                        args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
+                        buf += strlen(buf) + 1;
+                        args->generic.args[arg_def->opt_idx] = buf;
                     }
                     break;
                 case ARG_TYPE_POSITIONAL:

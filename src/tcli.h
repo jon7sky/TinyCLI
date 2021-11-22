@@ -27,7 +27,8 @@ enum
 
 typedef struct
 {
-    const char *s;
+    int short_idx;
+    int long_idx;
 	int type;
 	int opt_idx;
 	int mutex_idx;
@@ -46,7 +47,8 @@ typedef struct
 {
     const tcli_cmd_def_t *cmd_def;
     const tcli_arg_def_t *arg_def;
-    const char *string_tbl;
+    const char *cmd_string_tbl;
+    const char *arg_string_tbl;
 } tcli_def_t;
 
 extern const tcli_def_t tcli_def;
