@@ -68,7 +68,11 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_d
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
     for (i = 0, cd = tcli_def->cmd_def; i < CMD_ID_CNT; i++, cd++)
     {
-        DEBUG_PRINTF("Looking at cmd ID %d\n", cmd_id);
+        if (cd->s1_idx == 0)
+        {
+            continue;
+        }
+        DEBUG_PRINTF("Looking at cmd ID %d\n", i);
         b = *buf;
         if (cd->s1_idx)
         {

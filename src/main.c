@@ -21,7 +21,12 @@ int main(int argc, char *argv[])
         "deliver to Bob '123 Main St'",
         "deliver to Charlie '666 Elm St' huh?",
         "deliver to",
-        "eat burger fries",
+        "eat burger fries shake",
+        "turn grill on",
+        "turn grill off",
+        "turn grill on off",
+        "turn grill",
+        "hey you",
         NULL
     };
 
@@ -30,7 +35,7 @@ int main(int argc, char *argv[])
         printf("Command: %s\n", *cmd);
         strcpy(buf, *cmd);
         rc = tcli_cmd_handle(buf);
-        printf("Command returned %d\n\n", rc);
+        printf("Command returned %d : %s\n\n", rc, tcli_error(rc));
     }
 
     return 0;
@@ -85,5 +90,11 @@ int tcli_cmd_handle_eat(tcli_args_eat_t *args)
     {
         printf("Eating: %s\n", food);
     }
+    return TCLI_OK;
+}
+
+int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args)
+{
+    printf("Turning grill %s\n", args->on ? "on" : "off");
     return TCLI_OK;
 }

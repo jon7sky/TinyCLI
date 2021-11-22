@@ -23,6 +23,10 @@ static const tcli_arg_def_t tcli_arg_def[] =
 
     // eat
     { .short_idx = 0,   .long_idx = 0,  .type = ARG_TYPE_POSITIONAL_MULTI,  .opt_idx = 1,   .mutex_idx = 2, .required = 1 },        // 10 (positional)
+
+    // turn grill
+    { .short_idx = 0,   .long_idx = 84, .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 1,   .mutex_idx = 2, .required = 1 },        // 11 - on
+    { .short_idx = 0,   .long_idx = 87, .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 2,   .mutex_idx = 2, .required = 1 },        // 12 - off
 };
 
 static const tcli_cmd_def_t tcli_cmd_def[] =
@@ -31,35 +35,40 @@ static const tcli_cmd_def_t tcli_cmd_def[] =
     { .s1_idx = 2,  .s2_idx = 7,    .arg_def_idx = 3,   .arg_def_cnt = 4 }, // make burger
     { .s1_idx = 2,  .s2_idx = 14,   .arg_def_idx = 7,   .arg_def_cnt = 1 }, // make fries
     { .s1_idx = 20, .s2_idx = 28,   .arg_def_idx = 8,   .arg_def_cnt = 2 }, // deliver to
-    { .s1_idx = 31,                 .arg_def_idx = 10,  .arg_def_cnt = 1 }  // eat
+    { .s1_idx = 31,                 .arg_def_idx = 10,  .arg_def_cnt = 1 }, // eat
+    { .s1_idx = 35, .s2_idx = 40,   .arg_def_idx = 11,  .arg_def_cnt = 2 }  // turn grill
 };
 
 const char tcli_string_tbl[] =
-    " \000"         // 0
-    "make\000"      // 2
-    "burger\000"    // 7
-    "fries\000"     // 14
-    "deliver\000"   // 20
-    "to\000"        // 28
-    "eat\000";      // 31
+        " \000"         // 0
+        "make\000"      // 2
+        "burger\000"    // 7
+        "fries\000"     // 14
+        "deliver\000"   // 20
+        "to\000"        // 28
+        "eat\000"       // 31
+        "turn\000"      // 35
+        "grill\000"     // 40
+        ;
 
 const char tcli_arg_string_tbl[] =
-{
-    " \000"             // 0
-    "--to-go\000"       // 2
-    "--name\000"        // 10
-    "--white\000"       // 17
-    "--wheat\000"       // 25
-    "--ketchup\000"     // 33
-    "--mustard\000"     // 43
-    "--light-salt\000"  // 53
-    "-k\000"            // 66
-    "-m\000"            // 69
-    "-n\000"            // 72
-    "-w\000"            // 75
-    "-h\000"            // 78
-    "-g\000"            // 81
-};
+        " \000"             // 0
+        "--to-go\000"       // 2
+        "--name\000"        // 10
+        "--white\000"       // 17
+        "--wheat\000"       // 25
+        "--ketchup\000"     // 33
+        "--mustard\000"     // 43
+        "--light-salt\000"  // 53
+        "-k\000"            // 66
+        "-m\000"            // 69
+        "-n\000"            // 72
+        "-w\000"            // 75
+        "-h\000"            // 78
+        "-g\000"            // 81
+        "on\000"            // 84
+        "off\000"           // 87
+        ;
 
 const tcli_def_t tcli_def =
 {

@@ -10,6 +10,7 @@ enum
     CMD_ID_make_fries,
     CMD_ID_deliver_to,
     CMD_ID_eat,
+    CMD_ID_turn_grill,
     CMD_ID_CNT
 };
 
@@ -53,6 +54,14 @@ typedef struct
     char *food;
 } tcli_args_eat_t;
 
+typedef struct
+{
+    bool_options_t to_go:1;
+    bool_options_t on:1;
+    bool_options_t off:1;
+    char *name;
+} tcli_args_turn_grill_t;
+
 typedef union
 {
     tcli_args_generic_t         generic;
@@ -60,6 +69,7 @@ typedef union
     tcli_args_make_fries_t      make_fries;
     tcli_args_deliver_to_t      deliver_to;
     tcli_args_eat_t             eat;
+    tcli_args_turn_grill_t      turn_grill;
 } tcli_args_t;
 
 
@@ -67,5 +77,6 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args);
 int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args);
 int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args);
 int tcli_cmd_handle_eat(tcli_args_eat_t *args);
+int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args);
 
 #endif // TCLI_DEF_H
