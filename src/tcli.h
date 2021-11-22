@@ -36,8 +36,8 @@ typedef struct
 
 typedef struct
 {
-    const char *s1;
-    const char *s2;
+    int s1_idx;
+    int s2_idx;
     const tcli_arg_def_t *arg_def;
     int arg_def_cnt;
 } tcli_cmd_def_t;
@@ -45,6 +45,7 @@ typedef struct
 typedef struct
 {
     const tcli_cmd_def_t *cmd_def;
+    const char *string_tbl;
 } tcli_def_t;
 
 extern const tcli_def_t tcli_def;
