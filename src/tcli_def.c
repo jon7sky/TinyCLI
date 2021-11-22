@@ -22,7 +22,7 @@ const tcli_arg_def_t arg_def_make_fries[] =
 const tcli_cmd_def_t tcli_cmd_def[] =
 {
     { .s = " \000",                 .slen = 2,  .arg_def = &_arg_def_common[0],         .arg_def_cnt = 2 },
-    { .s = "make\000burger\000",    .slen = 12, .arg_def = &arg_def_make_burger[0],     .arg_def_cnt = 5 },
+    { .s = "make\000burger\000",    .slen = 12, .arg_def = &arg_def_make_burger[0],     .arg_def_cnt = 4 },
     { .s = "make\000fries\000",     .slen = 11, .arg_def = &arg_def_make_fries[0],      .arg_def_cnt = 1 }
 };
 

@@ -60,7 +60,9 @@ static void tcli_tokenize(char *buf)
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {
     int i;
+    int j;
     int cmd_id;
+    int arg_def_cnt;
     const tcli_arg_def_t *arg_def;
     const tcli_cmd_def_t *cmd_def;
     const tcli_cmd_def_t *common_cmd_def = &tcli_def->cmd_def[0];
@@ -95,30 +97,34 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
-        for (i = 0; i < (common_cmd_def->arg_def_cnt + cmd_def->arg_def_cnt) && option_bit == 0; i++)
+        for (j = 0; j < 2; j++)
         {
-        	arg_def = i < common_cmd_def->arg_def_cnt ? common_cmd_def->arg_def + i : cmd_def->arg_def + (i - common_cmd_def->arg_def_cnt);
-            DEBUG_PRINTF("  Considering arg '%s'\n", arg_def->s);
-            switch (arg_def->type)
+            arg_def = (j == 0 ? common_cmd_def->arg_def : cmd_def->arg_def);
+            arg_def_cnt = (j == 0 ? common_cmd_def->arg_def_cnt : cmd_def->arg_def_cnt);
+            for (i = 0; i < arg_def_cnt && option_bit == 0; i++, arg_def++)
             {
-            case ARG_TYPE_OPTION_BOOL:
-                if (strcmp(buf, arg_def->s) == 0)
+                DEBUG_PRINTF("  Considering arg '%s'\n", arg_def->s);
+                switch (arg_def->type)
                 {
-                    DEBUG_PRINTF("That's it\n");
-                    option_bit = (1 << arg_def->mutex_idx);
-                    args->generic.bools |= (1 << arg_def->opt_idx);
+                case ARG_TYPE_OPTION_BOOL:
+                    if (strcmp(buf, arg_def->s) == 0)
+                    {
+                        DEBUG_PRINTF("That's it\n");
+                        option_bit = (1 << arg_def->mutex_idx);
+                        args->generic.bools |= (1 << arg_def->opt_idx);
+                    }
+                    break;
+                case ARG_TYPE_OPTION_HAS_VALUE:
+                    if (strncmp(buf, arg_def->s, strlen(arg_def->s)) == 0)
+                    {
+                        DEBUG_PRINTF("That's it\n");
+                        option_bit = (1 << arg_def->mutex_idx);
+                        args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
+                    }
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case ARG_TYPE_OPTION_HAS_VALUE:
-                if (strncmp(buf, arg_def->s, strlen(arg_def->s)) == 0)
-                {
-                    DEBUG_PRINTF("That's it\n");
-                    option_bit = (1 << arg_def->mutex_idx);
-                    args->generic.args[arg_def->opt_idx] = buf + strlen(arg_def->s);
-                }
-                break;
-            default:
-                break;
             }
         }
         if (!option_bit)
