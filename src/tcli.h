@@ -13,7 +13,8 @@ enum
     TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED     = -3,
     TCLI_ERROR_COMMAND_NOT_SUPPORTED            = -4,
     TCLI_ERROR_UNKNOWN_OPTION                   = -5,
-    TCLI_INTERNAL_ERROR                         = -6
+    TCLI_ERROR_AMBIGUOUS_COMMAND                = -6,
+    TCLI_INTERNAL_ERROR                         = -100
 };
 
 enum
@@ -35,8 +36,8 @@ typedef struct
 
 typedef struct
 {
-    const char *s;
-    int slen;
+    const char *s1;
+    const char *s2;
     const tcli_arg_def_t *arg_def;
     int arg_def_cnt;
 } tcli_cmd_def_t;

@@ -57,20 +57,47 @@ static void tcli_tokenize(char *buf)
 #endif
 }
 
-static int find_cmd_def(const tcli_def_t *tcli_def, const char *buf, tcli_cmd_def_t **cmd_def_p)
+static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_def_t **cmd_def)
 {
+    int i;
     int cmd_id;
-    const tcli_cmd_def_t *cmd_def;
+    const tcli_cmd_def_t *cd;
+    char *b;
 
-    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
+    cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
+    for (i = 0, cd = tcli_def->cmd_def; i < CMD_ID_CNT; i++, cd++)
     {
-        if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
+        DEBUG_PRINTF("Looking at cmd ID %d\n", cmd_id);
+        b = *buf;
+        if (cd->s1)
         {
-            *cmd_def_p = cmd_def;
-            return cmd_id;
+            DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", cd->s1, b);
+            if (!*b || strncmp(cd->s1, b, strlen(b)) != 0)
+            {
+                continue;
+            }
+            b += strlen(b) + 1;
         }
+        if (cd->s2)
+        {
+            DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", cd->s1, b);
+            if (!*b || strncmp(cd->s2, b, strlen(b)) != 0)
+            {
+                continue;
+            }
+            b += strlen(b) + 1;
+        }
+        DEBUG_PRINTF("Found it!\n");
+        *buf = b;
+        *cmd_def = cd;
+        if (cmd_id > 0)
+        {
+            cmd_id = TCLI_ERROR_AMBIGUOUS_COMMAND;
+            break;
+        }
+        cmd_id = i;
     }
-    return CMD_ID_NONE;
+    return cmd_id;
 }
 
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
@@ -88,14 +115,13 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
-    cmd_id = find_cmd_def(tcli_def, buf, &cmd_def);
-    if (cmd_id == CMD_ID_NONE)
+    cmd_id = find_cmd_def(tcli_def, &buf, &cmd_def);
+    if (cmd_id < 0)
     {
-        DEBUG_PRINTF("Command not found\n");
-    	return TCLI_ERROR_COMMAND_NOT_FOUND;
+        DEBUG_PRINTF("Command error\n");
+    	return cmd_id;
     }
     DEBUG_PRINTF("Found command ID %d\n", cmd_id);
-    buf += cmd_def->slen;
     options_provided = 0;
     options_required = 0;
     for (i = 0, arg_def = cmd_def->arg_def; i < cmd_def->arg_def_cnt; i++, arg_def++)

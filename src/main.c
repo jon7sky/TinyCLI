@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
 
     const char *test_cmds[] =
     {
-        "make burger   --white --ketchup --mustard --name='Billy Joe Bob'",
+        "make burger   --white --ketchup --mustard --name='Alice Jones'",
+        "m b --wheat --ketchup --mustard --name='Bob Smith'",
         "make fries",
         "deliver to Alice",
         "deliver to Bob '123 Main St'",

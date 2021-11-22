@@ -32,11 +32,11 @@ static const tcli_arg_def_t arg_def_eat[] =
 
 static const tcli_cmd_def_t tcli_cmd_def[] =
 {
-    { .s = " \000",                 .slen = 2,  .arg_def = &_arg_def_common[0],         .arg_def_cnt = 2 },
-    { .s = "make\000burger\000",    .slen = 12, .arg_def = &arg_def_make_burger[0],     .arg_def_cnt = 4 },
-    { .s = "make\000fries\000",     .slen = 11, .arg_def = &arg_def_make_fries[0],      .arg_def_cnt = 1 },
-    { .s = "deliver\000to\000",     .slen = 11, .arg_def = &arg_def_deliver_to[0],      .arg_def_cnt = 2 },
-    { .s = "eat\000",               .slen = 4,  .arg_def = &arg_def_eat[0],             .arg_def_cnt = 1 }
+    { .s1 = " ",                                    .arg_def = &_arg_def_common[0],         .arg_def_cnt = 2 },
+    { .s1 = "make",         .s2 = "burger",         .arg_def = &arg_def_make_burger[0],     .arg_def_cnt = 4 },
+    { .s1 = "make",         .s2 = "fries",          .arg_def = &arg_def_make_fries[0],      .arg_def_cnt = 1 },
+    { .s1 = "deliver",      .s2 = "to",             .arg_def = &arg_def_deliver_to[0],      .arg_def_cnt = 2 },
+    { .s1 = "eat",                                  .arg_def = &arg_def_eat[0],             .arg_def_cnt = 1 }
 };
 
 const tcli_def_t tcli_def =
