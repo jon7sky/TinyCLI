@@ -57,6 +57,22 @@ static void tcli_tokenize(char *buf)
 #endif
 }
 
+static int find_cmd_def(const tcli_def_t *tcli_def, const char *buf, tcli_cmd_def_t **cmd_def_p)
+{
+    int cmd_id;
+    const tcli_cmd_def_t *cmd_def;
+
+    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
+    {
+        if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
+        {
+            *cmd_def_p = cmd_def;
+            return cmd_id;
+        }
+    }
+    return CMD_ID_NONE;
+}
+
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {
     int i;
@@ -72,14 +88,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
-    for (cmd_id = 0, cmd_def = tcli_def->cmd_def; cmd_id < CMD_ID_CNT; cmd_id++, cmd_def++)
-    {
-    	if (memcmp(buf, cmd_def->s, cmd_def->slen) == 0)
-    	{
-    		break;
-    	}
-    }
-    if (cmd_id == CMD_ID_CNT)
+    cmd_id = find_cmd_def(tcli_def, buf, &cmd_def);
+    if (cmd_id == CMD_ID_NONE)
     {
         DEBUG_PRINTF("Command not found\n");
     	return TCLI_ERROR_COMMAND_NOT_FOUND;
