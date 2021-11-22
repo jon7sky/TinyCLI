@@ -34,7 +34,7 @@ typedef struct
 typedef struct
 {
     bool_options_t to_go:1;
-    bool_options_t extra_salt:1;
+    bool_options_t light_salt:1;
     char *name;
 } tcli_args_make_fries_t;
 

@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
         "make burger   --white --ketchup --mustard --name='Alice Jones'",
         "m b --wheat --ketchup --mustard --name='Bob Smith'",
         "make fries",
+        "make fries --light-salt",
+        "make fries --extra-salt",
         "deliver to Alice",
         "deliver to Bob '123 Main St'",
         "deliver to Charlie '666 Elm St' huh?",
@@ -46,6 +48,17 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
     {
         printf("Add mustard\n");
     }
+    return TCLI_OK;
+}
+
+int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
+{
+    printf("Making fries");
+    if (args->light_salt)
+    {
+        printf(" with light salt");
+    }
+    printf("\n");
     return TCLI_OK;
 }
 

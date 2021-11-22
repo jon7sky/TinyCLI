@@ -12,7 +12,7 @@ static const tcli_arg_def_t tcli_arg_def[] =
     { .s = "--ketchup",     .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 3,   .mutex_idx = 3, .required = 0 },        // 5
     { .s = "--mustard",     .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 4,   .mutex_idx = 4, .required = 0 },        // 6
 
-    { .s = "--extra-salt",  .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 1,   .mutex_idx = 2, .required = 0 },        // 7 - make fries
+    { .s = "--light-salt",  .type = ARG_TYPE_OPTION_BOOL,       .opt_idx = 1,   .mutex_idx = 2, .required = 0 },        // 7 - make fries
 
     { .s = "",              .type = ARG_TYPE_POSITIONAL,        .opt_idx = 1,   .mutex_idx = 2, .required = 1 },        // 8 - deliver to
     { .s = "",              .type = ARG_TYPE_POSITIONAL,        .opt_idx = 2,   .mutex_idx = 3, .required = 0 },        // 9
