@@ -27,21 +27,20 @@ enum
 
 typedef struct
 {
-    uint32_t short_idx:10;  // Arg string table size 1024
-    uint32_t long_idx:10;
-    uint32_t opt_idx:4;     // 16 args
-    uint32_t mutex_idx:4;   // 16 args
+    uint32_t short_char:8;  // 8-bit character
+    uint32_t long_idx:11;   // Arg string table size 2048
+    uint32_t opt_idx:5;     // 32 args
+    uint32_t mutex_idx:5;   // 32 args
     uint32_t type:2;        // 4 types
     uint32_t required:1;    // bool
-    uint32_t _pad_:1;       // bool
 } tcli_arg_def_t;
 
 typedef struct
 {
     uint32_t s1_idx:10;     // Cmd string table size 1024
     uint32_t s2_idx:10;
-    uint32_t arg_def_idx:6; // 64 total args
-    uint32_t arg_def_cnt:4; // 16 args per cmd
+    uint32_t arg_def_idx:7; // 128 total args
+    uint32_t arg_def_cnt:5; // 32 args per cmd
 } tcli_cmd_def_t;
 
 typedef struct

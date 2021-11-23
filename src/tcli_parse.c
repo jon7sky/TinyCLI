@@ -151,7 +151,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 {
                 case ARG_TYPE_OPTION_BOOL:
                 case ARG_TYPE_OPTION_HAS_VALUE:
-                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || strcmp(buf, &s[arg_def->short_idx]) == 0)
+                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                     {
                         DEBUG_PRINTF("That's it\n");
                         option_bit = (1 << arg_def->mutex_idx);
