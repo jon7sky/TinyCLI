@@ -34,6 +34,7 @@ int tcli_cmd_handle(char *buf)
     switch (rc)
     {
     case CMD_ID_make_burger:    return tcli_cmd_handle_make_burger(&args.make_burger);
+    case CMD_ID_make_biscuits:  return tcli_cmd_handle_make_biscuits(&args.make_biscuits);
     case CMD_ID_make_fries:     return tcli_cmd_handle_make_fries(&args.make_fries);
     case CMD_ID_deliver_to:     return tcli_cmd_handle_deliver_to(&args.deliver_to);
     case CMD_ID_eat:            return tcli_cmd_handle_eat(&args.eat);
@@ -47,6 +48,10 @@ __attribute__((weak)) int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *a
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
+__attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
+{
+    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+}
 __attribute__((weak)) int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;

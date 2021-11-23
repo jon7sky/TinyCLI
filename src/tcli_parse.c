@@ -57,12 +57,13 @@ static void tcli_tokenize(char *buf)
 #endif
 }
 
-static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_def_t **cmd_def)
+static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd_def_t **cmd_def)
 {
     int i;
     int cmd_id;
     const tcli_cmd_def_t *cd;
     char *b;
+    char *buf = *buf_p;
     const char *s = tcli_def->cmd_string_tbl;
 
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
@@ -73,7 +74,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_d
             continue;
         }
         DEBUG_PRINTF("Looking at cmd ID %d\n", i);
-        b = *buf;
+        b = buf;
         if (cd->s1_idx)
         {
             DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", &s[cd->s1_idx], b);
@@ -85,7 +86,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_d
         }
         if (cd->s2_idx)
         {
-            DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", &s[cd->s2_idx], b);
+            DEBUG_PRINTF("Compare S2 '%s' to '%s'\n", &s[cd->s2_idx], b);
             if (!*b || strncmp(&s[cd->s2_idx], b, strlen(b)) != 0)
             {
                 continue;
@@ -93,7 +94,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf, const tcli_cmd_d
             b += strlen(b) + 1;
         }
         DEBUG_PRINTF("Found it!\n");
-        *buf = b;
+        *buf_p = b;
         *cmd_def = cd;
         if (cmd_id > 0)
         {

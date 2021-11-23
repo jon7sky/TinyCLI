@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     const char *test_cmds[] =
     {
         "make   burger   --white   --ketchup   --mustard   --name='Alice Jones'",
+        "m bu -w -k -n 'Bob Smith' -g",
         "m b -w -k -n 'Bob Smith' -g",
         "make fries",
         "make fries --light-salt",
