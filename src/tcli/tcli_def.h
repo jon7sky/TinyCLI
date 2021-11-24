@@ -63,7 +63,6 @@ typedef struct
     char *name;
 } tcli_args_turn_grill_t;
 
-
 typedef struct
 {
     bool_options_t bools;
