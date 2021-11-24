@@ -1,5 +1,5 @@
-make burger (--white | --wheat) [--ketchup] [--mustard] [--name=<name>]
-make fries [--light-salt"]
+make burger (--white | --wheat) [--ketchup --mustard --name=<name>]
+make fries [--light-salt]
 deliver to <name> [<address>]
 eat <food>...
 turn grill (on | off)

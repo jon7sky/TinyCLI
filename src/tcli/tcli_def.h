@@ -19,12 +19,6 @@ typedef uint32_t bool_options_t;
 
 typedef struct
 {
-    bool_options_t bools;
-    char *args[10];
-} tcli_args_generic_t;
-
-typedef struct
-{
     bool_options_t to_go:1;
     bool_options_t white:1;
     bool_options_t wheat:1;
@@ -69,17 +63,23 @@ typedef struct
     char *name;
 } tcli_args_turn_grill_t;
 
+
+typedef struct
+{
+    bool_options_t bools;
+    char *args[10];
+} tcli_args_generic_t;
+
 typedef union
 {
-    tcli_args_generic_t         generic;
-    tcli_args_make_burger_t     make_burger;
-    tcli_args_make_biscuits_t   make_biscuits;
-    tcli_args_make_fries_t      make_fries;
-    tcli_args_deliver_to_t      deliver_to;
-    tcli_args_eat_t             eat;
-    tcli_args_turn_grill_t      turn_grill;
+    tcli_args_generic_t generic;
+    tcli_args_make_burger_t make_burger;
+    tcli_args_make_biscuits_t make_biscuits;
+    tcli_args_make_fries_t make_fries;
+    tcli_args_deliver_to_t deliver_to;
+    tcli_args_eat_t eat;
+    tcli_args_turn_grill_t turn_grill;
 } tcli_args_t;
-
 
 int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args);
 int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args);
