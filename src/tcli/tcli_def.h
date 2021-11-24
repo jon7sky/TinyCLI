@@ -67,7 +67,7 @@ typedef struct
 typedef struct
 {
     bool_options_t bools;
-    char *args[10];
+    char *args[3];
 } tcli_args_generic_t;
 
 typedef union
@@ -88,4 +88,4 @@ int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args);
 int tcli_cmd_handle_eat(tcli_args_eat_t *args);
 int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args);
 
-#endif // TCLI_DEF_H
+#endif

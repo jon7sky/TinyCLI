@@ -1,6 +1,6 @@
-make burger (--white | --wheat) [--ketchup --mustard --name=<name>]
-make fries [--light-salt]
-deliver to <name> [<address>]
-eat <food>...
-turn grill (on | off)
-turn lights (on | off)
+make burger [--to-go --name=<name>] (--white | --wheat) [--ketchup --mustard]
+make biscuits [--to-go --name=<name>] 
+make fries [--to-go --name=<name>] [--light-salt]
+deliver to [--to-go --name=<name>] <person> [<address>]
+eat [--to-go --name=<name>] <food>...
+turn grill [--to-go --name=<name>] (on | off)

@@ -161,7 +161,8 @@ def main():
 	tcliDefH += '} tcli_args_generic_t;' + EOL
 	tcliDefH += '' + EOL
 	tcliDefH += 'typedef union' + EOL
-	tcliDefH += '}' + EOL
+	tcliDefH += '{' + EOL
+	tcliDefH += '    tcli_args_generic_t generic;' + EOL
 	for cmd in cmds:
 		tcliDefH += '    tcli_args' + cmd.structName + '_t ' + cmd.structName[1:] + ';' + EOL
 	tcliDefH += '} tcli_args_t;' + EOL
@@ -172,6 +173,11 @@ def main():
 	tcliDefH += '#endif' + EOL
 
 	print(tcliDefH)
+
+	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
+		f.write(tcliDefH)
+
+	return 0
 
 if __name__ == '__main__':
     sys.exit(main())
