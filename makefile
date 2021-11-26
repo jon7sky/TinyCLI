@@ -9,6 +9,9 @@ CFLAGS = -Wall
 $(EXE_FILE): $(C_FILES) $(H_FILES) Makefile
 	$(CC) -o $(EXE_FILE) -I$(INC) $(CFLAGS) $(C_FILES)
 
+.PHONY: all
+all: $(EXE_FILE)
+
 .PHONY: clean
 clean:
 	$(RM) $(EXE_FILE)
