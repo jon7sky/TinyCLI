@@ -143,9 +143,12 @@ def main():
 		varArgCnt = 0
 		tcliDefH += 'typedef struct' + EOL
 		tcliDefH += '{' + EOL
+		boolCnt = 0
 		for arg in cmd.args:
 			if arg.type == 'optBool':
 				tcliDefH += '    bool_options_t ' + arg.cVarName + ':1;' + EOL
+				boolCnt += 1
+		tcliDefH += '    bool_options_t _pad_:' + str(32-boolCnt) + ';' + EOL		
 		for arg in cmd.args:
 			if arg.type != 'optBool':
 				varArgCnt += 1

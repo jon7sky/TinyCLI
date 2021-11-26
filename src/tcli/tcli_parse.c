@@ -109,18 +109,16 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {
     int i;
-    int j;
     int cmd_id;
-    int arg_def_cnt;
     const tcli_arg_def_t *arg_def;
     const tcli_cmd_def_t *cmd_def;
-    const tcli_cmd_def_t *common_cmd_def = &tcli_def->cmd_def[0];
     uint32_t option_bit;
     uint32_t options_provided;
     uint32_t options_required;
     const char *s = &tcli_def->arg_string_tbl[0];
     int bool_opt_idx;
     int var_opt_idx;
+    int mutex_idx;
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
@@ -133,71 +131,68 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     DEBUG_PRINTF("Found command ID %d\n", cmd_id);
     options_provided = 0;
     options_required = 0;
-    for (i = 0, arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx]; i < cmd_def->arg_def_cnt; i++, arg_def++)
+    for (i = 0, mutex_idx = 0, arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx]; i < cmd_def->arg_def_cnt; i++)
     {
-        options_required |= (arg_def->required << arg_def->mutex_idx);
+        options_required |= (arg_def->required << mutex_idx);
+        arg_def++;
+        mutex_idx += arg_def->mutex;
     }
+    DEBUG_PRINTF("Options required: 0x%08x\n", options_required);
 
     while (*buf)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
         var_opt_idx = bool_opt_idx = 0;
-        for (j = 0; j < 2; j++)
+        mutex_idx = 0;
+        arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx];
+        for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
-            arg_def = (j == 0 ? &tcli_def->arg_def[common_cmd_def->arg_def_idx] : &tcli_def->arg_def[cmd_def->arg_def_idx]);
-            arg_def_cnt = (j == 0 ? common_cmd_def->arg_def_cnt : cmd_def->arg_def_cnt);
-            for (i = 0; i < arg_def_cnt && option_bit == 0; i++, arg_def++)
+            DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);
+            switch (arg_def->type)
             {
-                DEBUG_PRINTF("  Considering arg '%s'\n", &s[arg_def->long_idx]);
-                switch (arg_def->type)
+            case ARG_TYPE_OPTION_BOOL:
+                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                 {
-                case ARG_TYPE_OPTION_BOOL:
-                case ARG_TYPE_OPTION_HAS_VALUE:
-                    if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
+                    DEBUG_PRINTF("That's it\n");
+                    option_bit = (1 << mutex_idx);
+                    args->generic.bools |= (1 << bool_opt_idx);
+                }
+                bool_opt_idx++;
+                break;
+            case ARG_TYPE_OPTION_HAS_VALUE:
+                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
+                {
+                    DEBUG_PRINTF("That's it\n");
+                    option_bit = (1 << mutex_idx);
+                    buf += strlen(buf) + 1;
+                    args->generic.args[var_opt_idx] = buf;
+                }
+                var_opt_idx++;
+                break;
+            case ARG_TYPE_POSITIONAL:
+            case ARG_TYPE_POSITIONAL_MULTI:
+                if (!args->generic.args[var_opt_idx])
+                {
+                    args->generic.args[var_opt_idx] = buf;
+                    option_bit = (1 << mutex_idx);
+                    DEBUG_PRINTF("Positional arg %d filled in\n", var_opt_idx);
+                    if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
                     {
-                        DEBUG_PRINTF("That's it\n");
-                        option_bit = (1 << arg_def->mutex_idx);
-                        if (arg_def->type == ARG_TYPE_OPTION_BOOL)
-                        {
-                            args->generic.bools |= (1 << bool_opt_idx);
-                        }
-                        if (arg_def->type == ARG_TYPE_OPTION_HAS_VALUE)
+                        DEBUG_PRINTF("Assigned multi arg\n");
+                        while (*buf)
                         {
                             buf += strlen(buf) + 1;
-                            args->generic.args[var_opt_idx] = buf;
                         }
                     }
-                    break;
-                case ARG_TYPE_POSITIONAL:
-                case ARG_TYPE_POSITIONAL_MULTI:
-                    if (!args->generic.args[var_opt_idx])
-                    {
-                        args->generic.args[var_opt_idx] = buf;
-                        option_bit = (1 << arg_def->mutex_idx);
-                        DEBUG_PRINTF("Positional arg %d filled in\n", arg_def->opt_idx);
-                        if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
-                        {
-                            DEBUG_PRINTF("Assigned multi arg\n");
-                            while (*buf)
-                            {
-                                buf += strlen(buf) + 1;
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    break;
                 }
-                if (arg_def->type == ARG_TYPE_OPTION_BOOL)
-                {
-                    bool_opt_idx++;
-                }
-                else
-                {
-                    var_opt_idx++;
-                }
+                var_opt_idx++;
+                break;
+            default:
+                break;
             }
+            arg_def++;
+            mutex_idx += arg_def->mutex;
         }
         if (!option_bit)
         {

@@ -29,8 +29,8 @@ typedef struct
 {
     uint32_t short_char:8;  // 8-bit character
     uint32_t long_idx:11;   // Arg string table size 2048
-    uint32_t mutex_idx:5;   // 32 args
     uint32_t type:2;        // 4 types
+    uint32_t mutex:1;
     uint32_t required:1;    // bool
 } tcli_arg_def_t;
 

@@ -24,49 +24,45 @@ typedef struct
     bool_options_t wheat:1;
     bool_options_t ketchup:1;
     bool_options_t mustard:1;
+    bool_options_t _pad_:27;
     char *name;
 } tcli_args_make_burger_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
-    char *name;
+    bool_options_t _pad_:32;
 } tcli_args_make_biscuits_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
     bool_options_t light_salt:1;
-    char *name;
+    bool_options_t _pad_:31;
 } tcli_args_make_fries_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
-    char *name;
+    bool_options_t _pad_:32;
     char *person;
     char *address;
 } tcli_args_deliver_to_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
-    char *name;
+    bool_options_t _pad_:32;
     char *food;
 } tcli_args_eat_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
     bool_options_t on:1;
     bool_options_t off:1;
-    char *name;
+    bool_options_t _pad_:30;
 } tcli_args_turn_grill_t;
 
 typedef struct
 {
     bool_options_t bools;
-    char *args[3];
+    char *args[2];
 } tcli_args_generic_t;
 
 typedef union
