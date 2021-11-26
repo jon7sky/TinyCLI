@@ -123,14 +123,14 @@ def main():
 	print('CmdStringTbl: "' + cmdStringTbl + '"')
 	print('ArgStringTbl: "' + argStringTbl + '"')
 
-	tcliDefH  = '#ifndef TCLI_DEF_H' 	+ EOL
-	tcliDefH += '#define TCLI_DEF_H' 	+ EOL
-	tcliDefH += '' 						+ EOL
-	tcliDefH +=	'#include <stdint.h>' 	+ EOL
-	tcliDefH +=	'' 						+ EOL
-	tcliDefH +=	'enum'					+ EOL
-	tcliDefH +=	'{'						+ EOL
-	tcliDefH +=	'    CMD_ID_NONE = 0,'	+ EOL
+	tcliDefH  = '#ifndef TCLI_DEF_H' + EOL
+	tcliDefH += '#define TCLI_DEF_H' + EOL
+	tcliDefH += '' + EOL
+	tcliDefH +=	'#include <stdint.h>' + EOL
+	tcliDefH +=	'' + EOL
+	tcliDefH +=	'enum' + EOL
+	tcliDefH +=	'{' + EOL
+	tcliDefH +=	'    CMD_ID_NONE = 0,' + EOL
 	for cmd in cmds:
 		tcliDefH += '    CMD_ID' + cmd.structName + ',' + EOL
 	tcliDefH += '    CMD_ID_CNT' + EOL
@@ -173,6 +173,18 @@ def main():
 	tcliDefH += '#endif' + EOL
 
 	print(tcliDefH)
+
+
+	tcliDefC = ''
+	tcliDefC += '#include "tcli.h"' + EOL
+	tcliDefC += '' + EOL
+	tcliDefC += 'const char tcli_string_tbl[] =' + EOL
+	for word in cmdStringTbl.split(':'):
+		if word != '':
+			tcliDefC += '        "' + word + '" // ' + str(cmdStringTbl.find(':'+word+':') + 1) + EOL
+	tcliDefC += '' + EOL
+
+	print(tcliDefC)
 
 	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
 		f.write(tcliDefH)
