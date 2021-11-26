@@ -119,6 +119,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     uint32_t options_provided;
     uint32_t options_required;
     const char *s = &tcli_def->arg_string_tbl[0];
+    int bool_opt_idx;
+    int var_opt_idx;
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
@@ -140,6 +142,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
+        var_opt_idx = bool_opt_idx = 0;
         for (j = 0; j < 2; j++)
         {
             arg_def = (j == 0 ? &tcli_def->arg_def[common_cmd_def->arg_def_idx] : &tcli_def->arg_def[cmd_def->arg_def_idx]);
@@ -157,20 +160,20 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                         option_bit = (1 << arg_def->mutex_idx);
                         if (arg_def->type == ARG_TYPE_OPTION_BOOL)
                         {
-                            args->generic.bools |= (1 << arg_def->opt_idx);
+                            args->generic.bools |= (1 << bool_opt_idx);
                         }
                         if (arg_def->type == ARG_TYPE_OPTION_HAS_VALUE)
                         {
                             buf += strlen(buf) + 1;
-                            args->generic.args[arg_def->opt_idx] = buf;
+                            args->generic.args[var_opt_idx] = buf;
                         }
                     }
                     break;
                 case ARG_TYPE_POSITIONAL:
                 case ARG_TYPE_POSITIONAL_MULTI:
-                    if (!args->generic.args[arg_def->opt_idx])
+                    if (!args->generic.args[var_opt_idx])
                     {
-                        args->generic.args[arg_def->opt_idx] = buf;
+                        args->generic.args[var_opt_idx] = buf;
                         option_bit = (1 << arg_def->mutex_idx);
                         DEBUG_PRINTF("Positional arg %d filled in\n", arg_def->opt_idx);
                         if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
@@ -185,6 +188,14 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     break;
                 default:
                     break;
+                }
+                if (arg_def->type == ARG_TYPE_OPTION_BOOL)
+                {
+                    bool_opt_idx++;
+                }
+                else
+                {
+                    var_opt_idx++;
                 }
             }
         }
