@@ -31,7 +31,7 @@ static uint32_t tcli_hash_get_arg(void)
     return hash & ((1 << 22) - 1);
 }
 
-static const char *tcli_next(const char *s)
+static char *tcli_next(char *s)
 {
     if (*s)
     {
@@ -103,14 +103,14 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
         DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", &s[cd->s1_idx], b);
         if (*b && strncmp(&s[cd->s1_idx], b, strlen(b)) == 0)
         {
-            b += strlen(b) + 1;
+            b = tcli_next(b);
             DEBUG_PRINTF("Compare S2 '%s' to '%s'\n", &s[cd->s2_idx], b);
             if (cd->s2_idx == 0 || (*b && strncmp(&s[cd->s2_idx], b, strlen(b)) == 0))
             {
                 DEBUG_PRINTF("Found it!\n");
                 if (cd->s2_idx)
                 {
-                    b += strlen(b) + 1;
+                    b = tcli_next(b);
                 }
                 if (cmd_id > 0)
                 {
@@ -178,7 +178,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 {
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
-                    buf += strlen(buf) + 1;
+                    buf = tcli_next(buf);
                     args->generic.args[val_idx] = buf;
                 }
                 val_idx++;
@@ -221,12 +221,12 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
             {
                 DEBUG_PRINTF("Assigned multi arg\n");
-                for (; *buf; buf += strlen(buf) + 1);
+                for (; *buf; buf = tcli_next(buf));
             }
         }
         if (*buf)
         {
-            buf += strlen(buf) + 1;
+            buf = tcli_next(buf);
         }
     }
     if ((options_required & options_provided) != options_required || pos_idx < cmd_def->pos_req)
@@ -244,6 +244,6 @@ const char *tcli_next_arg(const char *arg)
     {
         return NULL;
     }
-    arg = tcli_next(arg);
+    arg += strlen(arg) + 1;
     return *arg ? arg : NULL;
 }
