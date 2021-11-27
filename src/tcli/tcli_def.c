@@ -13,6 +13,7 @@ const char tcli_string_tbl[] =
         "biscuits\000"      // 46
         ;
 
+// Hash algorithm is FNV-1A, 32-bit
 // Calculate hashes here:  https://md5calc.com/hash/fnv1a32?str=
 #define H(x) ((x) & 0x3fffff)
 

@@ -10,18 +10,25 @@
 #define DEBUG_PRINTF(...)
 #endif
 
-static void tcli_hash_init(uint32_t *hash)
+static uint32_t hash;
+
+static void tcli_hash_init(void)
 {
-    *hash = 0x811c9dc5;
+    hash = 0x811c9dc5;
 }
 
-static void tcli_hash_add(uint32_t *hash, const char *buf)
+static void tcli_hash_add(const char *buf)
 {
     for (; *buf; buf++)
     {
-        *hash ^= *buf;
-        *hash *= 0x01000193;
+        hash ^= *buf;
+        hash *= 0x01000193;
     }
+}
+
+static uint32_t tcli_hash_get_arg(void)
+{
+    return hash & ((1 << 22) - 1);
 }
 
 static void tcli_tokenize(char *buf)
@@ -150,9 +157,9 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         val_idx = bool_idx = 0;
         mutex_idx = 0;
         arg_def = (tcli_arg_def_t *)cmd_def + 1;
-        tcli_hash_init(&hash);
-        tcli_hash_add(&hash, buf);
-        hash &= 0x3fffff;
+        tcli_hash_init();
+        tcli_hash_add(buf);
+        hash = tcli_hash_get_arg();
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
             DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);
@@ -222,11 +229,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     return cmd_id;
 }
 
-const char *next_arg(const char *arg)
+const char *tcli_next_arg(const char *arg)
 {
     if (*arg)
     {
         arg += strlen(arg) + 1;
     }
-    return *arg ? arg : (const char *) 0;
+    return arg;
 }

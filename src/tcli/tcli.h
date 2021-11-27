@@ -53,7 +53,7 @@ extern const tcli_def_t tcli_def;
 
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args);
 int tcli_cmd_handle(char *buf);
-const char *next_arg(const char *arg);
+const char *tcli_next_arg(const char *arg);
 const char *tcli_error(int error);
 
 #endif // TCLI_H
