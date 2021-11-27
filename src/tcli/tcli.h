@@ -39,6 +39,9 @@ typedef struct
     uint32_t s1_idx:10;     // Cmd string table size 1024
     uint32_t s2_idx:10;
     uint32_t arg_def_cnt:5; // 32 args per cmd
+    uint32_t pos_cnt:3;
+    uint32_t pos_req:3;
+    uint32_t pos_multi:1;
 } tcli_cmd_def_t;
 
 typedef union

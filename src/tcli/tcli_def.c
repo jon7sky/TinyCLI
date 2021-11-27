@@ -45,12 +45,12 @@ static const tcli_ca_def_t tcli_ca_def[] =
     { .arg_def.short_char = 'l',  .arg_def.long_idx = 53, .arg_def.type = ARG_TYPE_OPTION_BOOL,      .arg_def.mutex = 1, .arg_def.required = 0 },        // 9 - light-salt
 
     // deliver to
-    { .cmd_def.s1_idx = 20, .cmd_def.s2_idx = 28,   .cmd_def.arg_def_cnt = 2 },
+    { .cmd_def.s1_idx = 20, .cmd_def.s2_idx = 28,   .cmd_def.arg_def_cnt = 2, .cmd_def.pos_cnt = 2, .cmd_def.pos_req = 1 },
     { .arg_def.short_char = 0,   .arg_def.long_idx = 0,  .arg_def.type = ARG_TYPE_POSITIONAL,        .arg_def.mutex = 1, .arg_def.required = 1 },        // 10 (positional)
     { .arg_def.short_char = 0,   .arg_def.long_idx = 0,  .arg_def.type = ARG_TYPE_POSITIONAL,        .arg_def.mutex = 1, .arg_def.required = 0 },        // 11 (positional)
 
     // eat
-    { .cmd_def.s1_idx = 31,                         .cmd_def.arg_def_cnt = 1 },
+    { .cmd_def.s1_idx = 31,                         .cmd_def.arg_def_cnt = 1, .cmd_def.pos_cnt = 1, .cmd_def.pos_multi = 1 },
     { .arg_def.short_char = 0,   .arg_def.long_idx = 0,  .arg_def.type = ARG_TYPE_POSITIONAL_MULTI,  .arg_def.mutex = 1, .arg_def.required = 1 },        // 12 (positional)
 
     // turn grill

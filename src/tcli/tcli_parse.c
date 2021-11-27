@@ -116,8 +116,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     uint32_t options_provided;
     uint32_t options_required;
     const char *s = &tcli_def->arg_string_tbl[0];
-    int bool_opt_idx;
-    int var_opt_idx;
+    int bool_idx;
+    int val_idx;
     int mutex_idx;
 
     tcli_tokenize(buf);
@@ -145,7 +145,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
-        var_opt_idx = bool_opt_idx = 0;
+        val_idx = bool_idx = 0;
         mutex_idx = 0;
         arg_def = (tcli_arg_def_t *)cmd_def + 1;
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
@@ -158,9 +158,9 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 {
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
-                    args->generic.bools |= (1 << bool_opt_idx);
+                    args->generic.bools |= (1 << bool_idx);
                 }
-                bool_opt_idx++;
+                bool_idx++;
                 break;
             case ARG_TYPE_OPTION_HAS_VALUE:
                 if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
@@ -168,27 +168,24 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
                     buf += strlen(buf) + 1;
-                    args->generic.args[var_opt_idx] = buf;
+                    args->generic.args[val_idx] = buf;
                 }
-                var_opt_idx++;
+                val_idx++;
                 break;
             case ARG_TYPE_POSITIONAL:
             case ARG_TYPE_POSITIONAL_MULTI:
-                if (!args->generic.args[var_opt_idx])
+                if (!args->generic.args[val_idx])
                 {
-                    args->generic.args[var_opt_idx] = buf;
+                    args->generic.args[val_idx] = buf;
                     option_bit = (1 << mutex_idx);
-                    DEBUG_PRINTF("Positional arg %d filled in\n", var_opt_idx);
+                    DEBUG_PRINTF("Positional arg %d filled in\n", val_idx);
                     if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
                     {
                         DEBUG_PRINTF("Assigned multi arg\n");
-                        while (*buf)
-                        {
-                            buf += strlen(buf) + 1;
-                        }
+                        for (; *buf; buf += strlen(buf) + 1);
                     }
                 }
-                var_opt_idx++;
+                val_idx++;
                 break;
             default:
                 break;
