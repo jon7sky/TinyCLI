@@ -149,18 +149,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
             DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);
-            switch (arg_def->type)
+            if (arg_def->has_val)
             {
-            case ARG_TYPE_OPTION_BOOL:
-                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
-                {
-                    DEBUG_PRINTF("That's it\n");
-                    option_bit = (1 << mutex_idx);
-                    args->generic.bools |= (1 << bool_idx);
-                }
-                bool_idx++;
-                break;
-            case ARG_TYPE_OPTION_HAS_VALUE:
                 if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                 {
                     DEBUG_PRINTF("That's it\n");
@@ -169,26 +159,16 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     args->generic.args[val_idx] = buf;
                 }
                 val_idx++;
-                break;
-#if 0
-            case ARG_TYPE_POSITIONAL:
-            case ARG_TYPE_POSITIONAL_MULTI:
-                if (!args->generic.args[val_idx])
+            }
+            else
+            {
+                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                 {
-                    args->generic.args[val_idx] = buf;
+                    DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
-                    DEBUG_PRINTF("Positional arg %d filled in\n", val_idx);
-                    if (arg_def->type == ARG_TYPE_POSITIONAL_MULTI)
-                    {
-                        DEBUG_PRINTF("Assigned multi arg\n");
-                        for (; *buf; buf += strlen(buf) + 1);
-                    }
+                    args->generic.bools |= (1 << bool_idx);
                 }
-                val_idx++;
-                break;
-#endif
-            default:
-                break;
+                bool_idx++;
             }
             arg_def++;
             mutex_idx += arg_def->mutex;

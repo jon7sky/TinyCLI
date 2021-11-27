@@ -18,19 +18,11 @@ enum
     TCLI_INTERNAL_ERROR                         = -100
 };
 
-enum
-{
-	ARG_TYPE_OPTION_BOOL = 0,
-	ARG_TYPE_OPTION_HAS_VALUE,
-    ARG_TYPE_POSITIONAL,
-    ARG_TYPE_POSITIONAL_MULTI
-};
-
 typedef struct
 {
     uint32_t short_char:8;  // 8-bit character
     uint32_t long_idx:11;   // Arg string table size 2048
-    uint32_t type:2;        // 4 types
+    uint32_t has_val:1;
     uint32_t mutex:1;
     uint32_t required:1;    // bool
 } tcli_arg_def_t;
