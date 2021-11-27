@@ -53,6 +53,7 @@ __attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
+
 __attribute__((weak)) int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;

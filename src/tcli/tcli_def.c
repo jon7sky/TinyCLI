@@ -29,34 +29,34 @@ const char tcli_arg_string_tbl[] =
 static const tcli_ca_def_t tcli_ca_def[] =
 {
     // make burger
-    { .cmd_def.s1_idx = 2,  .cmd_def.s2_idx = 7,    .cmd_def.arg_def_cnt = 6 },
-    { .arg_def.short_char = 'g', .arg_def.long_idx = 2,  .arg_def.has_val = 0,       .arg_def.mutex = 1, .arg_def.required = 0 },        // 3 - to-go
-    { .arg_def.short_char = 'n', .arg_def.long_idx = 10, .arg_def.has_val = 1,       .arg_def.mutex = 1, .arg_def.required = 0 },        // 4 - name
-    { .arg_def.short_char = 'w', .arg_def.long_idx = 17, .arg_def.has_val = 0,       .arg_def.mutex = 1, .arg_def.required = 1 },        // 5 - white
-    { .arg_def.short_char = 'h', .arg_def.long_idx = 25, .arg_def.has_val = 0,       .arg_def.mutex = 0, .arg_def.required = 1 },        // 6 - wheat
-    { .arg_def.short_char = 'k', .arg_def.long_idx = 33, .arg_def.has_val = 0,       .arg_def.mutex = 1, .arg_def.required = 0 },        // 7 - ketchup
-    { .arg_def.short_char = 'm', .arg_def.long_idx = 43, .arg_def.has_val = 0,       .arg_def.mutex = 1, .arg_def.required = 0 },        // 8 - mustard
+    { .cmd_def.s1_idx =  2, .cmd_def.s2_idx =  7, .cmd_def.arg_def_cnt = 6, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'g', .arg_def.long_idx =  2, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // to-go
+    { .arg_def.short_char = 'n', .arg_def.long_idx = 10, .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // name
+    { .arg_def.short_char = 'w', .arg_def.long_idx = 17, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // white
+    { .arg_def.short_char = 'h', .arg_def.long_idx = 25, .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // wheat
+    { .arg_def.short_char = 'k', .arg_def.long_idx = 33, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // ketchup
+    { .arg_def.short_char = 'm', .arg_def.long_idx = 43, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // mustard
 
     // make biscuits
-    { .cmd_def.s1_idx = 2,  .cmd_def.s2_idx = 46,   .cmd_def.arg_def_cnt = 0 },
+    { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 46, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
 
     // make fries
-    { .cmd_def.s1_idx = 2,  .cmd_def.s2_idx = 14,   .cmd_def.arg_def_cnt = 1 },
-    { .arg_def.short_char = 'l',  .arg_def.long_idx = 53, .arg_def.has_val = 0,      .arg_def.mutex = 1, .arg_def.required = 0 },        // 9 - light-salt
+    { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 14, .cmd_def.arg_def_cnt = 1, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'l', .arg_def.long_idx = 53, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // light-salt
 
     // deliver to
-    { .cmd_def.s1_idx = 20, .cmd_def.s2_idx = 28,   .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 2, .cmd_def.pos_req = 1 },
+    { .cmd_def.s1_idx = 20, .cmd_def.s2_idx = 28, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 2, .cmd_def.pos_req = 1, .cmd_def.pos_multi = 0 },
 
     // eat
-    { .cmd_def.s1_idx = 31,                         .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 1, .cmd_def.pos_multi = 1 },
+    { .cmd_def.s1_idx = 31, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 1, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 1 },
 
     // turn grill
-    { .cmd_def.s1_idx = 35, .cmd_def.s2_idx = 40,   .cmd_def.arg_def_cnt = 2 },
-    { .arg_def.short_char = 0,   .arg_def.long_idx = 66, .arg_def.has_val = 0,       .arg_def.mutex = 1, .arg_def.required = 1 },        // 13 - on
-    { .arg_def.short_char = 0,   .arg_def.long_idx = 69, .arg_def.has_val = 0,       .arg_def.mutex = 0, .arg_def.required = 1 },        // 14 - off
+    { .cmd_def.s1_idx = 35, .cmd_def.s2_idx = 40, .cmd_def.arg_def_cnt = 2, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char =   0, .arg_def.long_idx = 66, .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // on
+    { .arg_def.short_char =   0, .arg_def.long_idx = 69, .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // off
 
     // end of list
-    { .cmd_def.s1_idx = 0,  .cmd_def.s2_idx = 0,    .cmd_def.arg_def_cnt = 0 },
+    { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
 };
 
 const tcli_def_t tcli_def =
