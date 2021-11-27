@@ -69,39 +69,27 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
     for (i = 1, cd = &tcli_def->ca_def->cmd_def; cd->s1_idx != 0; i++, cd += cd->arg_def_cnt + 1)
     {
-        if (cd->s1_idx == 0)
-        {
-            continue;
-        }
         DEBUG_PRINTF("Looking at cmd ID %d\n", i);
         b = buf;
-        if (cd->s1_idx)
+        DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", &s[cd->s1_idx], b);
+        if (*b && strncmp(&s[cd->s1_idx], b, strlen(b)) == 0)
         {
-            DEBUG_PRINTF("Compare S1 '%s' to '%s'\n", &s[cd->s1_idx], b);
-            if (!*b || strncmp(&s[cd->s1_idx], b, strlen(b)) != 0)
-            {
-                continue;
-            }
             b += strlen(b) + 1;
-        }
-        if (cd->s2_idx)
-        {
             DEBUG_PRINTF("Compare S2 '%s' to '%s'\n", &s[cd->s2_idx], b);
-            if (!*b || strncmp(&s[cd->s2_idx], b, strlen(b)) != 0)
+            if (cd->s2_idx == 0 || (*b && strncmp(&s[cd->s2_idx], b, strlen(b)) == 0))
             {
-                continue;
+                DEBUG_PRINTF("Found it!\n");
+                b += strlen(b) + 1;
+                if (cmd_id > 0)
+                {
+                    cmd_id = TCLI_ERROR_AMBIGUOUS_COMMAND;
+                    break;
+                }
+                *buf_p = b;
+                *cmd_def = cd;
+                cmd_id = i;
             }
-            b += strlen(b) + 1;
         }
-        DEBUG_PRINTF("Found it!\n");
-        *buf_p = b;
-        *cmd_def = cd;
-        if (cmd_id > 0)
-        {
-            cmd_id = TCLI_ERROR_AMBIGUOUS_COMMAND;
-            break;
-        }
-        cmd_id = i;
     }
     return cmd_id;
 }
