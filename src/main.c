@@ -87,7 +87,7 @@ int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 {
     const char *food;
 
-    for (food = args->food; *food; food = tcli_next_arg(food))
+    for (food = args->food; food; food = tcli_next_arg(food))
     {
         printf("Eating: %s\n", food);
     }

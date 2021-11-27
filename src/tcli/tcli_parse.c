@@ -31,6 +31,15 @@ static uint32_t tcli_hash_get_arg(void)
     return hash & ((1 << 22) - 1);
 }
 
+static const char *tcli_next(const char *s)
+{
+    if (*s)
+    {
+        s += strlen(s) + 1;
+    }
+    return s;
+}
+
 static void tcli_tokenize(char *buf)
 {
     char *f;
@@ -231,9 +240,10 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
 const char *tcli_next_arg(const char *arg)
 {
-    if (*arg)
+    if (!arg || !arg)
     {
-        arg += strlen(arg) + 1;
+        return NULL;
     }
-    return arg;
+    arg = tcli_next(arg);
+    return *arg ? arg : NULL;
 }
