@@ -20,8 +20,8 @@ enum
 
 typedef struct
 {
-    uint32_t short_char:8;  // 8-bit character
-    uint32_t long_idx:11;   // Arg string table size 2048
+    uint32_t hash:22;
+    uint32_t short_char:7;  // 8-bit character
     uint32_t has_val:1;
     uint32_t mutex:1;
     uint32_t required:1;    // bool
@@ -47,7 +47,6 @@ typedef struct
 {
     const tcli_ca_def_t *ca_def;
     const char *cmd_string_tbl;
-    const char *arg_string_tbl;
 } tcli_def_t;
 
 extern const tcli_def_t tcli_def;

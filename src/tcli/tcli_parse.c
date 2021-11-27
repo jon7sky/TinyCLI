@@ -10,6 +10,19 @@
 #define DEBUG_PRINTF(...)
 #endif
 
+static void tcli_hash_init(uint32_t *hash)
+{
+    *hash = 0x811c9dc5;
+}
+
+static void tcli_hash_add(uint32_t *hash, const char *buf)
+{
+    for (; *buf; buf++)
+    {
+        *hash ^= *buf;
+        *hash *= 0x01000193;
+    }
+}
 
 static void tcli_tokenize(char *buf)
 {
@@ -79,7 +92,10 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
             if (cd->s2_idx == 0 || (*b && strncmp(&s[cd->s2_idx], b, strlen(b)) == 0))
             {
                 DEBUG_PRINTF("Found it!\n");
-                b += strlen(b) + 1;
+                if (cd->s2_idx)
+                {
+                    b += strlen(b) + 1;
+                }
                 if (cmd_id > 0)
                 {
                     cmd_id = TCLI_ERROR_AMBIGUOUS_COMMAND;
@@ -103,11 +119,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     uint32_t option_bit;
     uint32_t options_provided = 0;
     uint32_t options_required = 0;
-    const char *s = &tcli_def->arg_string_tbl[0];
     int bool_idx;
     int val_idx;
     int mutex_idx;
     int pos_idx = 0;
+    uint32_t hash;
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
@@ -134,12 +150,15 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         val_idx = bool_idx = 0;
         mutex_idx = 0;
         arg_def = (tcli_arg_def_t *)cmd_def + 1;
+        tcli_hash_init(&hash);
+        tcli_hash_add(&hash, buf);
+        hash &= 0x3fffff;
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
             DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);
             if (arg_def->has_val)
             {
-                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
+                if (hash == arg_def->hash || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                 {
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
@@ -150,7 +169,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             }
             else
             {
-                if (strcmp(buf, &s[arg_def->long_idx]) == 0 || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
+                if (hash == arg_def->hash || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
                 {
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
