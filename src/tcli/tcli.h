@@ -14,6 +14,7 @@ enum
     TCLI_ERROR_COMMAND_NOT_SUPPORTED            = -4,
     TCLI_ERROR_UNKNOWN_OPTION                   = -5,
     TCLI_ERROR_AMBIGUOUS_COMMAND                = -6,
+    TCLI_ERROR_TOO_MANY_ARGS                    = -7,
     TCLI_INTERNAL_ERROR                         = -100
 };
 

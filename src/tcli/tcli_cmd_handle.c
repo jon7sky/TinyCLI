@@ -16,6 +16,7 @@ const char *tcli_error(int error)
     case TCLI_ERROR_UNKNOWN_OPTION:                 return("Unrecognized option");
     case TCLI_ERROR_AMBIGUOUS_COMMAND:              return("Ambiguous command");
     case TCLI_INTERNAL_ERROR:                       return("Internal error");
+    case TCLI_ERROR_TOO_MANY_ARGS:                  return("Too many arguments");
     default:                                        return("Unknown error code");
     }
 }

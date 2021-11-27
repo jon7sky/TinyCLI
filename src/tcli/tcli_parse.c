@@ -113,12 +113,13 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     const tcli_arg_def_t *arg_def;
     const tcli_cmd_def_t *cmd_def;
     uint32_t option_bit;
-    uint32_t options_provided;
-    uint32_t options_required;
+    uint32_t options_provided = 0;
+    uint32_t options_required = 0;
     const char *s = &tcli_def->arg_string_tbl[0];
     int bool_idx;
     int val_idx;
     int mutex_idx;
+    int pos_idx = 0;
 
     tcli_tokenize(buf);
     DEBUG_PRINTF("Searching through list of commands...\n");
@@ -129,8 +130,6 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     	return cmd_id;
     }
     DEBUG_PRINTF("Found command ID %d\n", cmd_id);
-    options_provided = 0;
-    options_required = 0;
 
     for (i = 0, mutex_idx = 0, arg_def = (tcli_arg_def_t *)cmd_def + 1; i < cmd_def->arg_def_cnt; i++)
     {
@@ -138,7 +137,6 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         arg_def++;
         mutex_idx += arg_def->mutex;
     }
-
     DEBUG_PRINTF("Options required: 0x%08x\n", options_required);
 
     while (*buf)
@@ -172,6 +170,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 }
                 val_idx++;
                 break;
+#if 0
             case ARG_TYPE_POSITIONAL:
             case ARG_TYPE_POSITIONAL_MULTI:
                 if (!args->generic.args[val_idx])
@@ -187,29 +186,47 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 }
                 val_idx++;
                 break;
+#endif
             default:
                 break;
             }
             arg_def++;
             mutex_idx += arg_def->mutex;
         }
-        if (!option_bit)
+
+        if (option_bit)
         {
-            DEBUG_PRINTF("Unknown option\n");
-            return TCLI_ERROR_UNKNOWN_OPTION;        	
+            if (option_bit & options_provided)
+            {
+                DEBUG_PRINTF("Option conflict\n");
+                return TCLI_ERROR_OPTION_CONFLICT;
+            }
+            options_provided |= option_bit;
         }
-        if (option_bit & options_provided)
+        else
         {
-            DEBUG_PRINTF("Option conflict\n");
-            return TCLI_ERROR_OPTION_CONFLICT;
+            if (*buf == '-')
+            {
+                return TCLI_ERROR_UNKNOWN_OPTION;
+            }
+            if (pos_idx >= cmd_def->pos_cnt)
+            {
+                return TCLI_ERROR_TOO_MANY_ARGS;
+            }
+            DEBUG_PRINTF("Positional arg %d filled in\n", val_idx + pos_idx);
+            args->generic.args[val_idx + pos_idx++] = buf;
+            if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
+            {
+                DEBUG_PRINTF("Assigned multi arg\n");
+                for (; *buf; buf += strlen(buf) + 1);
+            }
         }
-        options_provided |= option_bit;
         if (*buf)
         {
             buf += strlen(buf) + 1;
         }
     }
-    if ((options_required & options_provided) != options_required)
+    if ((options_required & options_provided) != options_required || pos_idx < cmd_def->pos_req)
     {
         DEBUG_PRINTF("Required option not provided\n");
         return TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED;
