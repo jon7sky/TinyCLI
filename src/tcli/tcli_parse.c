@@ -67,7 +67,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
     const char *s = tcli_def->cmd_string_tbl;
 
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
-    for (i = 0, cd = tcli_def->cmd_def; i < CMD_ID_CNT; i++, cd++)
+    for (i = 1, cd = &tcli_def->ca_def->cmd_def; cd->s1_idx != 0; i++, cd += cd->arg_def_cnt + 1)
     {
         if (cd->s1_idx == 0)
         {
@@ -131,12 +131,14 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     DEBUG_PRINTF("Found command ID %d\n", cmd_id);
     options_provided = 0;
     options_required = 0;
-    for (i = 0, mutex_idx = 0, arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx]; i < cmd_def->arg_def_cnt; i++)
+
+    for (i = 0, mutex_idx = 0, arg_def = (tcli_arg_def_t *)cmd_def + 1; i < cmd_def->arg_def_cnt; i++)
     {
         options_required |= (arg_def->required << mutex_idx);
         arg_def++;
         mutex_idx += arg_def->mutex;
     }
+
     DEBUG_PRINTF("Options required: 0x%08x\n", options_required);
 
     while (*buf)
@@ -145,7 +147,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         option_bit = 0;
         var_opt_idx = bool_opt_idx = 0;
         mutex_idx = 0;
-        arg_def = &tcli_def->arg_def[cmd_def->arg_def_idx];
+        arg_def = (tcli_arg_def_t *)cmd_def + 1;
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
             DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);

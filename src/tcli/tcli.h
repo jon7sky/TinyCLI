@@ -38,14 +38,18 @@ typedef struct
 {
     uint32_t s1_idx:10;     // Cmd string table size 1024
     uint32_t s2_idx:10;
-    uint32_t arg_def_idx:7; // 128 total args
     uint32_t arg_def_cnt:5; // 32 args per cmd
 } tcli_cmd_def_t;
 
+typedef union
+{
+    tcli_arg_def_t arg_def;
+    tcli_cmd_def_t cmd_def;
+} tcli_ca_def_t;
+
 typedef struct
 {
-    const tcli_cmd_def_t *cmd_def;
-    const tcli_arg_def_t *arg_def;
+    const tcli_ca_def_t *ca_def;
     const char *cmd_string_tbl;
     const char *arg_string_tbl;
 } tcli_def_t;
