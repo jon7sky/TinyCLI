@@ -1,6 +1,15 @@
-make burger (-w,--white | -h,--wheat) [-k,--ketchup -m,--mustard -g,--to-go -n,--name=<name>]
+make burger [options]  (-w,--white | -h,--wheat)
+-k,--ketchup        Add ketchup 
+-m,--mustard        Add Mustard
+-g,--to-go          Make it to go
+-n,--name=<name>    Add name
+
 make fries [-l,--light-salt]
+
 deliver to <person> [<address>]
+
 eat <food>...
+
 turn grill (on | off)
+
 make biscuits

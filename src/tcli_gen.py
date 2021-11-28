@@ -20,6 +20,8 @@ class Arg:
 
 def formatLine(line):
 	line = line.strip()
+	line = line.replace('[options]', '')
+	line = line.replace('[Options]', '')
 	line = line.replace('(', ' ( ')
 	line = line.replace(')', ' ) ')
 	line = line.replace('[', ' [ ')
@@ -44,12 +46,27 @@ def hashCalc(buf):
 	return hash
 
 def main():
-	debug = False
+	debug = True
 	cmds = []
 	EOL = '\n'
 
 	with open('tcli_def.txt', 'r') as f:
-		lines = f.readlines()
+		fileLines = f.readlines()
+		
+	lines = []
+	
+	for line in fileLines:
+		line = line.strip()
+		if len(line.split()) > 0:
+			if line.startswith('-'):
+				if debug:
+					print('Continuing line: "' + line + '"')			
+				line = line.replace(', ', ',')
+				lines[-1] += (' [' + line.split()[0] + '] ')
+			else:
+				if debug:
+					print('Read new line: "' + line + '"')
+				lines.append(line)
 
 	for line in lines:
 		line = formatLine(line)
