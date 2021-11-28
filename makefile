@@ -1,5 +1,5 @@
 INC = src/tcli
-C_FILES = src/main.c src/tcli/tcli_def.c src/tcli/tcli_parse.c src/tcli/tcli_cmd_handle.c
+C_FILES = src/main.c src/tcli/tcli_def.c src/tcli/tcli_parse.c src/tcli/tcli_cmd_handle.c src/tcli/tcli_error.c
 H_FILES = src/tcli/tcli.h src/tcli/tcli_def.h
 EXE_FILE = tcli.exe
 CC = gcc
