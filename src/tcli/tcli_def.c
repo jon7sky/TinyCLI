@@ -28,9 +28,6 @@ static const tcli_ca_def_t tcli_ca_def[] =
     { .arg_def.short_char = 'k', .arg_def.hash = H(0x5a31f5db), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // ketchup
     { .arg_def.short_char = 'm', .arg_def.hash = H(0xd091bf7b), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // mustard
 
-    // make biscuits
-    { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 46, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
-
     // make fries
     { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 14, .cmd_def.arg_def_cnt = 1, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
     { .arg_def.short_char = 'l', .arg_def.hash = H(0xcb9d1424), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // light-salt
@@ -46,7 +43,10 @@ static const tcli_ca_def_t tcli_ca_def[] =
     { .arg_def.short_char =   0, .arg_def.hash = H(0x61342fd0), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // on
     { .arg_def.short_char =   0, .arg_def.hash = H(0xab3a8a0a), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // off
 
+    // make biscuits
+    { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 46, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
     // end of list
+
     { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
 };
 
