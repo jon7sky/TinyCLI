@@ -45,8 +45,8 @@ static const tcli_ca_def_t tcli_ca_def[] =
 
     // make biscuits
     { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 46, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
-    // end of list
 
+    // end of list
     { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
 };
 
