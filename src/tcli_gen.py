@@ -46,7 +46,7 @@ def hashCalc(buf):
 	return hash
 
 def main():
-	debug = True
+	debug = False
 	cmds = []
 	EOL = '\n'
 
@@ -161,6 +161,10 @@ def main():
 	x += '' + EOL
 	x +=	'#include <stdint.h>' + EOL
 	x +=	'' + EOL
+	x += '#define TCLI_USAGE_TEXT \\' + EOL
+	for line in fileLines:
+		x += '    "' + line.rstrip() + '\\n" \\' + EOL
+	x += '    ""' + EOL + EOL
 	x +=	'enum' + EOL
 	x +=	'{' + EOL
 	x +=	'    CMD_ID_NONE = 0,' + EOL

@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
         "turn grill on off",
         "turn grill",
         "hey you",
+        "help",
         NULL
     };
 
@@ -72,7 +73,7 @@ int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 
 int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {
-    printf("Delivering order to %s", args->person);
+    printf("Delivering order to %s", args->name);
     if (args->address)
     {
         printf(" at %s", args->address);
@@ -95,5 +96,11 @@ int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args)
 {
     printf("Turning grill %s\n", args->on ? "on" : "off");
+    return TCLI_OK;
+}
+
+int tcli_cmd_handle_help(tcli_args_help_t *args)
+{
+    puts(TCLI_USAGE_TEXT);
     return TCLI_OK;
 }

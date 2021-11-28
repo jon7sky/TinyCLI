@@ -6,10 +6,12 @@ make burger [options]  (-w,--white | -h,--wheat)
 
 make fries [-l,--light-salt]
 
-deliver to <person> [<address>]
+make biscuits
+
+deliver to <name> [<address>]
 
 eat <food>...
 
 turn grill (on | off)
 
-make biscuits
+help

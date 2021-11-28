@@ -13,10 +13,11 @@ int tcli_cmd_handle(char *buf)
     {
     case CMD_ID_make_burger:        return tcli_cmd_handle_make_burger(&args.make_burger);
     case CMD_ID_make_fries:         return tcli_cmd_handle_make_fries(&args.make_fries);
+    case CMD_ID_make_biscuits:      return tcli_cmd_handle_make_biscuits(&args.make_biscuits);
     case CMD_ID_deliver_to:         return tcli_cmd_handle_deliver_to(&args.deliver_to);
     case CMD_ID_eat:                return tcli_cmd_handle_eat(&args.eat);
     case CMD_ID_turn_grill:         return tcli_cmd_handle_turn_grill(&args.turn_grill);
-    case CMD_ID_make_biscuits:      return tcli_cmd_handle_make_biscuits(&args.make_biscuits);
+    case CMD_ID_help:               return tcli_cmd_handle_help(&args.help);
     default:                        return TCLI_INTERNAL_ERROR;
     }
 }
@@ -27,6 +28,11 @@ __attribute__((weak)) int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *a
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
+{
+    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+}
+
+__attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
@@ -46,7 +52,7 @@ __attribute__((weak)) int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *arg
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
-__attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
+__attribute__((weak)) int tcli_cmd_handle_help(tcli_args_help_t *args)
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
