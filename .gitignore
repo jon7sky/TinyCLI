@@ -2,6 +2,7 @@ Debug
 .autotools
 .cproject
 .project
+.pydevproject
 .settings
 *.exe
 /Default/

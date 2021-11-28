@@ -34,6 +34,14 @@ def formatCVarName(name):
 		cVarName += c if c.isalnum() else '_'
 	return cVarName
 
+def hashCalc(buf):
+	hash = 0x811c9dc5
+	for c in buf:
+		hash ^= ord(c)
+		hash *= 0x01000193
+		hash &= 0xffffffff
+	return hash
+
 def main():
 	debug = True
 	cmds = []
@@ -47,10 +55,10 @@ def main():
 		print('Parsing line: "' + line + '"')
 		cmd = Cmd()
 		parsingKeywords = True
-		required = True
+		required = 1
 		optBoolIdx = 0
 		optValIdx = 0
-		mutexIdx = 0
+		mutex = 1
 		for word in line.split():
 			# print('Parsing word ' + word)
 			if parsingKeywords:
@@ -61,15 +69,15 @@ def main():
 					parsingKeywords = False
 			if not parsingKeywords:
 				if word == '(':
-					required = True
+					required = 1
 				elif word == ')':
-					required = True
+					required = 1
 				elif word == '[':
-					required = False
+					required = 0
 				elif word == ']':
-					required = True
+					required = 1
 				elif word == '|':
-					mutexIdx -= 1
+					mutex = 0
 				else:
 					arg = Arg()
 					if word.startswith('<'):
@@ -88,7 +96,13 @@ def main():
 						optValIdx += 1
 					else:
 						opt, sep, oprnd = word.partition('=')
-						arg.longName = opt
+						n1, sep2, n2 = opt.partition(',')
+						if n2 != '':
+							arg.shortName = n1
+							arg.longName = n2
+						else:
+							arg.shortName = ''
+							arg.longName = n1
 						if sep == '=':
 							arg.type = 'optVal'
 							arg.optIdx = optValIdx
@@ -97,19 +111,18 @@ def main():
 							arg.type = 'optBool'
 							arg.optIdx = optBoolIdx
 							optBoolIdx += 1
-						arg.cVarName = formatCVarName(opt)
-					arg.mutexIdx = mutexIdx
-					mutexIdx += 1
-					mutex = False
+						arg.cVarName = formatCVarName(arg.longName)
+					arg.mutex = mutex
+					mutex = 1
 					arg.required = required
 					cmd.args.append(arg)
 		if debug:
 			print('Command: ', cmd.keywords)
 			for arg in cmd.args:
-				print('  Arg: shortName = "' + arg.shortName + '", longName = "' + arg.longName + '", cVarName = "' + arg.cVarName + '", type = ' + arg.type + ', ' + ('required' if arg.required else 'optional') + ', optIdx = ' + str(arg.optIdx) + ', mutexIdx = ' + str(arg.mutexIdx))
+				print('  Arg: shortName = "' + arg.shortName + '", longName = "' + arg.longName + '", cVarName = "' + arg.cVarName + '", type = ' + arg.type + ', required = ' + str(arg.required) + ', optIdx = ' + str(arg.optIdx) + ', mutex = ' + str(arg.mutex))
 
 		cmds.append(cmd)
-	cmdStringTbl = ' :'
+	cmdStringTbl = '*:'
 	argStringTbl = ''
 	for cmd in cmds:
 		for keyword in cmd.keywords:
@@ -123,74 +136,121 @@ def main():
 	print('CmdStringTbl: "' + cmdStringTbl + '"')
 	print('ArgStringTbl: "' + argStringTbl + '"')
 
-	tcliDefH  = '#ifndef TCLI_DEF_H' + EOL
-	tcliDefH += '#define TCLI_DEF_H' + EOL
-	tcliDefH += '' + EOL
-	tcliDefH +=	'#include <stdint.h>' + EOL
-	tcliDefH +=	'' + EOL
-	tcliDefH +=	'enum' + EOL
-	tcliDefH +=	'{' + EOL
-	tcliDefH +=	'    CMD_ID_NONE = 0,' + EOL
+	x  = '#ifndef TCLI_DEF_H' + EOL
+	x += '#define TCLI_DEF_H' + EOL
+	x += '' + EOL
+	x +=	'#include <stdint.h>' + EOL
+	x +=	'' + EOL
+	x +=	'enum' + EOL
+	x +=	'{' + EOL
+	x +=	'    CMD_ID_NONE = 0,' + EOL
 	for cmd in cmds:
-		tcliDefH += '    CMD_ID' + cmd.structName + ',' + EOL
-	tcliDefH += '    CMD_ID_CNT' + EOL
-	tcliDefH += '};' + EOL
-	tcliDefH += '' + EOL
-	tcliDefH += 'typedef uint32_t bool_options_t;' + EOL
-	tcliDefH += '' + EOL
+		x += '    CMD_ID' + cmd.structName + ',' + EOL
+	x += '    CMD_ID_CNT' + EOL
+	x += '};' + EOL
+	x += '' + EOL
+	x += 'typedef uint32_t bool_options_t;' + EOL
+	x += '' + EOL
 	maxVarArgCnt = 0
 	for cmd in cmds:
 		varArgCnt = 0
-		tcliDefH += 'typedef struct' + EOL
-		tcliDefH += '{' + EOL
+		x += 'typedef struct' + EOL
+		x += '{' + EOL
 		boolCnt = 0
 		for arg in cmd.args:
 			if arg.type == 'optBool':
-				tcliDefH += '    bool_options_t ' + arg.cVarName + ':1;' + EOL
+				x += '    bool_options_t ' + arg.cVarName + ':1;' + EOL
 				boolCnt += 1
-		tcliDefH += '    bool_options_t _pad_:' + str(32-boolCnt) + ';' + EOL		
+		x += '    bool_options_t _pad_:' + str(32-boolCnt) + ';' + EOL		
 		for arg in cmd.args:
 			if arg.type != 'optBool':
 				varArgCnt += 1
-				tcliDefH += '    char *' + arg.cVarName + ';' + EOL
-		tcliDefH += '} tcli_args' + cmd.structName + '_t;' + EOL
-		tcliDefH += '' + EOL
+				x += '    char *' + arg.cVarName + ';' + EOL
+		x += '} tcli_args' + cmd.structName + '_t;' + EOL
+		x += '' + EOL
 		if varArgCnt > maxVarArgCnt:
 			maxVarArgCnt = varArgCnt
-	tcliDefH += 'typedef struct' + EOL
-	tcliDefH += '{' + EOL
-	tcliDefH += '    bool_options_t bools;' + EOL
-	tcliDefH += '    char *vals[' + str(maxVarArgCnt) + '];' + EOL
-	tcliDefH += '} tcli_args_generic_t;' + EOL
-	tcliDefH += '' + EOL
-	tcliDefH += 'typedef union' + EOL
-	tcliDefH += '{' + EOL
-	tcliDefH += '    tcli_args_generic_t generic;' + EOL
+	x += 'typedef struct' + EOL
+	x += '{' + EOL
+	x += '    bool_options_t bools;' + EOL
+	x += '    char *vals[' + str(maxVarArgCnt) + '];' + EOL
+	x += '} tcli_args_generic_t;' + EOL
+	x += '' + EOL
+	x += 'typedef union' + EOL
+	x += '{' + EOL
+	x += '    tcli_args_generic_t generic;' + EOL
 	for cmd in cmds:
-		tcliDefH += '    tcli_args' + cmd.structName + '_t ' + cmd.structName[1:] + ';' + EOL
-	tcliDefH += '} tcli_args_t;' + EOL
-	tcliDefH += '' + EOL
+		x += '    tcli_args' + cmd.structName + '_t ' + cmd.structName[1:] + ';' + EOL
+	x += '} tcli_args_t;' + EOL
+	x += '' + EOL
 	for cmd in cmds:
-		tcliDefH += 'int tcli_cmd_handle' + cmd.structName +  '(tcli_args' + cmd.structName + '_t *args);' + EOL
-	tcliDefH += '' + EOL
-	tcliDefH += '#endif' + EOL
+		x += 'int tcli_cmd_handle' + cmd.structName +  '(tcli_args' + cmd.structName + '_t *args);' + EOL
+	x += '' + EOL
+	x += '#endif' + EOL
+	print(x)
+	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
+		f.write(x)
 
-	print(tcliDefH)
-
-
-	tcliDefC = ''
-	tcliDefC += '#include "tcli.h"' + EOL
-	tcliDefC += '' + EOL
-	tcliDefC += 'const char tcli_string_tbl[] =' + EOL
+	x = ''
+	x += '#include "tcli.h"' + EOL
+	x += '' + EOL
+	x += 'static const char tcli_string_tbl[] =' + EOL
 	for word in cmdStringTbl.split(':'):
 		if word != '':
-			tcliDefC += '        "' + word + '" // ' + str(cmdStringTbl.find(':'+word+':') + 1) + EOL
-	tcliDefC += '' + EOL
-
-	print(tcliDefC)
-
-	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
-		f.write(tcliDefH)
+			x += '        %-19s // %d' % ('"'+word+'\\000"', cmdStringTbl.find(':'+word+':') + 1) + EOL
+	x += '        ;' + EOL + EOL
+	x += '#define H(x) ((x) & 0x3fffff)' + EOL +EOL
+	x += 'static const tcli_ca_def_t tcli_ca_def[] =' + EOL
+	x += '{' + EOL
+	for cmd in cmds:
+		x += '    //'
+		for kw in cmd.keywords:
+			x += ' %s' % (kw)
+		x += EOL
+		idx = [0,0]
+		for i in (0,1):
+			if len(cmd.keywords) > i:
+				idx[i] = cmdStringTbl.find(cmd.keywords[i])
+		argCnt = 0
+		posCnt = 0
+		posReq = 0
+		posMulti = 0
+		for arg in cmd.args:
+			if arg.type.startswith('opt'):
+				argCnt += 1
+			if arg.type.startswith('pos'):
+				posCnt += 1
+				if arg.required:
+					posReq += 1
+			if arg.type == 'posMulti':
+				posMulti = 1
+		x += '    { .cmd_def.s1_idx = %2d, .cmd_def.s2_idx = %2d, ' % (idx[0], idx[1])
+		x += '.cmd_def.arg_def_cnt = %d, ' % (argCnt)
+		x += '.cmd_def.pos_cnt = %d, ' % (posCnt)
+		x += '.cmd_def.pos_req = %d, ' % (posReq)
+		x += '.cmd_def.pos_multi = %d },' % (posMulti)
+		x += EOL
+		for arg in cmd.args:
+			if arg.type.startswith('opt'):
+				x += "    { .arg_def.short_char = '%s', " % (' ' if arg.shortName == '' else arg.shortName[1])
+				x += '.arg_def.hash = H(0x%x), ' % (hashCalc(arg.longName))
+				x += '.arg_def.has_val = %d, ' % (1 if arg.type == 'optVal' else 0)
+				x += '.arg_def.mutex = %d, ' % (arg.mutex)
+				x += '.arg_def.required = %d }, ' % (arg.required)
+				x += '// %s' % (arg.cVarName)
+				x += EOL
+		x += EOL
+	x += '    // end of list' + EOL
+	x += '    { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },' + EOL
+	x += '};' + EOL + EOL
+	x += 'const tcli_def_t tcli_def =' + EOL
+	x += '{' + EOL
+	x += '    .ca_def = &tcli_ca_def[0],' + EOL
+	x += '    .cmd_string_tbl = &tcli_string_tbl[0],' + EOL
+	x += '};' + EOL
+	print(x)
+	with open(os.path.join('tcli', 'tcli_def.c'), 'w') as f:
+		f.write(x)
 
 	return 0
 
