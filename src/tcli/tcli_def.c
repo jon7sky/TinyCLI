@@ -1,6 +1,6 @@
 #include "tcli.h"
 
-const char tcli_string_tbl[] =
+static const char tcli_string_tbl[] =
         "*\000"             // 0
         "make\000"          // 2
         "burger\000"        // 7

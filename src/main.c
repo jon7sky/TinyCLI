@@ -2,8 +2,6 @@
 #include <string.h>
 #include "tcli.h"
 
-tcli_args_t args;
-
 int main(int argc, char *argv[])
 {
     char buf[1000];

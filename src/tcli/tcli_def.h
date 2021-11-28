@@ -62,7 +62,7 @@ typedef struct
 typedef struct
 {
     bool_options_t bools;
-    char *args[2];
+    char *vals[2];
 } tcli_args_generic_t;
 
 typedef union

@@ -179,7 +179,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
                     buf = tcli_next(buf);
-                    args->generic.args[val_idx] = buf;
+                    args->generic.vals[val_idx] = buf;
                 }
                 val_idx++;
             }
@@ -217,7 +217,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                 return TCLI_ERROR_TOO_MANY_ARGS;
             }
             DEBUG_PRINTF("Positional arg %d filled in\n", val_idx + pos_idx);
-            args->generic.args[val_idx + pos_idx++] = buf;
+            args->generic.vals[val_idx + pos_idx++] = buf;
             if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
             {
                 DEBUG_PRINTF("Assigned multi arg\n");
