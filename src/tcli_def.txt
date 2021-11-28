@@ -1,4 +1,4 @@
-make burger [-g,--to-go -n,--name=<name>] (-w,--white | -h,--wheat) [-k,--ketchup -m,--mustard]
+make burger (-w,--white | -h,--wheat) [-k,--ketchup -m,--mustard -g,--to-go -n,--name=<name>]
 make fries [-l,--light-salt]
 deliver to <person> [<address>]
 eat <food>...

@@ -19,12 +19,12 @@ static const tcli_ca_def_t tcli_ca_def[] =
 {
     // make burger
     { .cmd_def.s1_idx =  2, .cmd_def.s2_idx =  7, .cmd_def.arg_def_cnt = 6, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = 'g', .arg_def.hash = H(0xe5d842ab), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // to_go
-    { .arg_def.short_char = 'n', .arg_def.hash = H(0xc4700b0c), .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // name
     { .arg_def.short_char = 'w', .arg_def.hash = H(0x763a12d8), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // white
     { .arg_def.short_char = 'h', .arg_def.hash = H(0xd4cc95ca), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // wheat
     { .arg_def.short_char = 'k', .arg_def.hash = H(0x5a31f5db), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // ketchup
     { .arg_def.short_char = 'm', .arg_def.hash = H(0xd091bf7b), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // mustard
+    { .arg_def.short_char = 'g', .arg_def.hash = H(0xe5d842ab), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // to_go
+    { .arg_def.short_char = 'n', .arg_def.hash = H(0xc4700b0c), .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // name
 
     // make fries
     { .cmd_def.s1_idx =  2, .cmd_def.s2_idx = 14, .cmd_def.arg_def_cnt = 1, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },

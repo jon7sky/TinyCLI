@@ -43,7 +43,7 @@ def hashCalc(buf):
 	return hash
 
 def main():
-	debug = True
+	debug = False
 	cmds = []
 	EOL = '\n'
 
@@ -52,7 +52,8 @@ def main():
 
 	for line in lines:
 		line = formatLine(line)
-		print('Parsing line: "' + line + '"')
+		if debug:
+			print('Parsing line: "' + line + '"')
 		cmd = Cmd()
 		parsingKeywords = True
 		required = 1
@@ -133,8 +134,9 @@ def main():
 				argStringTbl += arg.longName + ':'
 	cmdStringTbl += ':'
 	argStringTbl += ':'
-	print('CmdStringTbl: "' + cmdStringTbl + '"')
-	print('ArgStringTbl: "' + argStringTbl + '"')
+	if debug:
+		print('CmdStringTbl: "' + cmdStringTbl + '"')
+		print('ArgStringTbl: "' + argStringTbl + '"')
 
 	x  = '#ifndef TCLI_DEF_H' + EOL
 	x += '#define TCLI_DEF_H' + EOL
@@ -187,7 +189,8 @@ def main():
 		x += 'int tcli_cmd_handle' + cmd.structName +  '(tcli_args' + cmd.structName + '_t *args);' + EOL
 	x += '' + EOL
 	x += '#endif' + EOL
-	print(x)
+	if debug:
+		print(x)
 	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
 		f.write(x)
 
@@ -248,7 +251,8 @@ def main():
 	x += '    .ca_def = &tcli_ca_def[0],' + EOL
 	x += '    .cmd_string_tbl = &tcli_string_tbl[0],' + EOL
 	x += '};' + EOL
-	print(x)
+	if debug:
+		print(x)
 	with open(os.path.join('tcli', 'tcli_def.c'), 'w') as f:
 		f.write(x)
 

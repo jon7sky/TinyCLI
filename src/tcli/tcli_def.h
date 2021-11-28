@@ -19,11 +19,11 @@ typedef uint32_t bool_options_t;
 
 typedef struct
 {
-    bool_options_t to_go:1;
     bool_options_t white:1;
     bool_options_t wheat:1;
     bool_options_t ketchup:1;
     bool_options_t mustard:1;
+    bool_options_t to_go:1;
     bool_options_t _pad_:27;
     char *name;
 } tcli_args_make_burger_t;
