@@ -160,7 +160,7 @@ def main():
 	tcliDefH += 'typedef struct' + EOL
 	tcliDefH += '{' + EOL
 	tcliDefH += '    bool_options_t bools;' + EOL
-	tcliDefH += '    char *args[' + str(maxVarArgCnt) + '];' + EOL
+	tcliDefH += '    char *vals[' + str(maxVarArgCnt) + '];' + EOL
 	tcliDefH += '} tcli_args_generic_t;' + EOL
 	tcliDefH += '' + EOL
 	tcliDefH += 'typedef union' + EOL
