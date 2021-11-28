@@ -101,6 +101,6 @@ int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args)
 
 int tcli_cmd_handle_help(tcli_args_help_t *args)
 {
-    puts(TCLI_USAGE_TEXT);
+    printf(TCLI_USAGE_TEXT);
     return TCLI_OK;
 }

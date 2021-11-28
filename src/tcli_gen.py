@@ -222,8 +222,8 @@ def main():
 	x += 'static const char tcli_string_tbl[] =' + EOL
 	for word in cmdStringTbl.split(':'):
 		if word != '':
-			x += '        %-19s // %d' % ('"'+word+'\\000"', cmdStringTbl.find(':'+word+':') + 1) + EOL
-	x += '        ;' + EOL + EOL
+			x += '    %-31s // %d' % ('"'+word+'\\000"', cmdStringTbl.find(':'+word+':') + 1) + EOL
+	x += '    ;' + EOL + EOL
 	x += '#define H(x) ((x) & 0x3fffff)' + EOL +EOL
 	x += 'static const tcli_ca_def_t tcli_ca_def[] =' + EOL
 	x += '{' + EOL
@@ -249,10 +249,10 @@ def main():
 					posReq += 1
 			if arg.type == 'posMulti':
 				posMulti = 1
-		x += '    { .cmd_def.s1_idx = %2d, .cmd_def.s2_idx = %2d, ' % (idx[0], idx[1])
-		x += '.cmd_def.arg_def_cnt = %d, ' % (argCnt)
-		x += '.cmd_def.pos_cnt = %d, ' % (posCnt)
-		x += '.cmd_def.pos_req = %d, ' % (posReq)
+		x += '    { .cmd_def.s1_idx = %3d, .cmd_def.s2_idx = %3d, ' % (idx[0], idx[1])
+		x += '.cmd_def.arg_def_cnt = %2d, ' % (argCnt)
+		x += '.cmd_def.pos_cnt = %2d, ' % (posCnt)
+		x += '.cmd_def.pos_req = %2d, ' % (posReq)
 		x += '.cmd_def.pos_multi = %d },' % (posMulti)
 		x += EOL
 		for arg in cmd.args:
