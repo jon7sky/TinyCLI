@@ -1,8 +1,8 @@
 make burger [options]  (-w,--white | -h,--wheat)
--k,--ketchup        Add ketchup 
--m,--mustard        Add Mustard
--g,--to-go          Make it to go
--n,--name=<name>    Add name
+    -k, --ketchup       Add ketchup 
+    -m, --mustard       Add Mustard
+    -g, --to-go         Make it to go
+    -n, --name=<name>   Add name
 
 make fries [-l,--light-salt]
 

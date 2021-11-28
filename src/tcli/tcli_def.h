@@ -5,10 +5,10 @@
 
 #define TCLI_USAGE_TEXT \
     "make burger [options]  (-w,--white | -h,--wheat)\n" \
-    "-k,--ketchup        Add ketchup\n" \
-    "-m,--mustard        Add Mustard\n" \
-    "-g,--to-go          Make it to go\n" \
-    "-n,--name=<name>    Add name\n" \
+    "    -k, --ketchup       Add ketchup\n" \
+    "    -m, --mustard       Add Mustard\n" \
+    "    -g, --to-go         Make it to go\n" \
+    "    -n, --name=<name>   Add name\n" \
     "\n" \
     "make fries [-l,--light-salt]\n" \
     "\n" \
