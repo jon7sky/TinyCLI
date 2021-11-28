@@ -1,5 +1,6 @@
 import sys
 import os
+from termios import CEOL
 
 class Cmd:
 	def __init__(self):
@@ -256,6 +257,33 @@ def main():
 	with open(os.path.join('tcli', 'tcli_def.c'), 'w') as f:
 		f.write(x)
 
+	x = ''
+	x += '#include "tcli.h"' + EOL + EOL
+	x += 'static tcli_args_t args;' + EOL + EOL
+	x += 'int tcli_cmd_handle(char *buf)' + EOL
+	x += '{' + EOL
+	x += '    int rc;' + EOL + EOL
+	x += '    memset(&args, 0, sizeof(args));' + EOL
+	x += '    if ((rc = tcli_parse(buf, &tcli_def, &args)) < 0) return rc;' + EOL + EOL
+	x += '    switch (rc)' + EOL
+	x += '    {' + EOL
+	for cmd in cmds:
+		x += '    %-31s return tcli_cmd_handle%s(&args.%s);' % ('case CMD_ID'+cmd.structName+':', cmd.structName, cmd.structName[1:])
+		x += EOL
+	x += '    %-31s return TCLI_INTERNAL_ERROR;' % ('default:') + EOL
+	x += '    }' + EOL
+	x += '}' + EOL + EOL
+	for cmd in cmds:
+		x += '__attribute__((weak)) int tcli_cmd_handle%s(tcli_args%s_t *args)' % (cmd.structName, cmd.structName)
+		x += EOL
+		x += '{' + EOL
+		x += '    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;' + EOL
+		x += '}' + EOL + EOL
+	if debug:
+		print(x)
+	with open(os.path.join('tcli', 'tcli_cmd_handle.c'), 'w') as f:
+		f.write(x)	
+	
 	return 0
 
 if __name__ == '__main__':
