@@ -21,18 +21,18 @@ enum
 typedef struct
 {
     uint32_t hash:22;
-    uint32_t short_char:7;  // 8-bit character
+    uint32_t short_char:7;
     uint32_t has_val:1;
     uint32_t mutex:1;
-    uint32_t required:1;    // bool
+    uint32_t required:1;
 } tcli_arg_def_t;
 
 typedef struct
 {
-    uint32_t s1_idx:10;     // Cmd string table size 1024
+    uint32_t s1_idx:10;     // Command string table size 1024 bytes
     uint32_t s2_idx:10;
-    uint32_t arg_def_cnt:5; // 32 args per cmd
-    uint32_t pos_cnt:3;
+    uint32_t arg_def_cnt:5; // 32 options per command
+    uint32_t pos_cnt:3;     // 8 positional arguments
     uint32_t pos_req:3;
     uint32_t pos_multi:1;
 } tcli_cmd_def_t;
