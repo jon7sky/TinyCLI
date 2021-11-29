@@ -44,35 +44,21 @@ static void tcli_tokenize(char *buf)
 {
     char *f;
     char *t;
-    char copy_until_char;
+    char c;
 
     for (f = t = buf; *f;)
     {
-        while (*f == ' ')
+        for (; *f == ' '; f++);
+        if ((c = *f) == '\'' || *f == '\"')
         {
-            f++;
+            for (f++; *f && (*t = *f++) != c; t++);
         }
-        copy_until_char = ' ';
-        while (*f)
+        else
         {
-            if ((*f == '\'' || *f == '\"') && copy_until_char == ' ')
-            {
-                copy_until_char = *f;
-            }
-            else if (*f == copy_until_char || (*f == '=' && copy_until_char == ' '))
-            {
-                *t++ = 0;
-                f++;
-                break;
-            }
-            else
-            {
-                *t++ = *f;
-            }
-            f++;
+            for (; *f && (*t = *f++) != '=' && *t != ' '; t++);
         }
+        *t++ = 0;
     }
-    *t++ = 0;
     *t = 0;
 
 #if DEBUG
@@ -171,7 +157,6 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         hash = tcli_hash_get_arg();
         for (i = 0; i < cmd_def->arg_def_cnt && option_bit == 0; i++)
         {
-            DEBUG_PRINTF("  Considering arg '%s', mutex_idx = %d\n", &s[arg_def->long_idx], mutex_idx);
             if (arg_def->has_val)
             {
                 if (hash == arg_def->hash || (*buf == '-' && *(buf+1) == arg_def->short_char && *(buf+2) == 0))
