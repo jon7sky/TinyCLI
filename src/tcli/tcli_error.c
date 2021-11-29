@@ -6,8 +6,8 @@ const char *tcli_error(int error)
     {
     case TCLI_OK:                                   return("OK");
     case TCLI_ERROR_COMMAND_NOT_FOUND:              return("Unrecognized command");
-    case TCLI_ERROR_OPTION_CONFLICT:                return("Conflicting options");
-    case TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED:   return("Required option not provided");
+    case TCLI_ERROR_ARG_CONFLICT:                   return("Conflicting arguments");
+    case TCLI_ERROR_REQUIRED_ARG_NOT_PROVIDED:      return("Required argument not provided");
     case TCLI_ERROR_COMMAND_NOT_SUPPORTED:          return("Command not supported");
     case TCLI_ERROR_UNKNOWN_OPTION:                 return("Unrecognized option");
     case TCLI_ERROR_AMBIGUOUS_COMMAND:              return("Ambiguous command");

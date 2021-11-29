@@ -184,8 +184,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
         {
             if (option_bit & options_provided)
             {
-                DEBUG_PRINTF("Option conflict\n");
-                return TCLI_ERROR_OPTION_CONFLICT;
+                DEBUG_PRINTF("Arg conflict\n");
+                return TCLI_ERROR_ARG_CONFLICT;
             }
             options_provided |= option_bit;
         }
@@ -214,8 +214,8 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     }
     if ((options_required & options_provided) != options_required || pos_idx < cmd_def->pos_req)
     {
-        DEBUG_PRINTF("Required option not provided\n");
-        return TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED;
+        DEBUG_PRINTF("Required arg not provided\n");
+        return TCLI_ERROR_REQUIRED_ARG_NOT_PROVIDED;
     }
 
     return cmd_id;

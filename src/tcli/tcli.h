@@ -9,8 +9,8 @@ enum
 {
     TCLI_OK                                     = 0,
     TCLI_ERROR_COMMAND_NOT_FOUND                = -1,
-    TCLI_ERROR_OPTION_CONFLICT                  = -2,
-    TCLI_ERROR_REQUIRED_OPTION_NOT_PROVIDED     = -3,
+    TCLI_ERROR_ARG_CONFLICT                     = -2,
+    TCLI_ERROR_REQUIRED_ARG_NOT_PROVIDED        = -3,
     TCLI_ERROR_COMMAND_NOT_SUPPORTED            = -4,
     TCLI_ERROR_UNKNOWN_OPTION                   = -5,
     TCLI_ERROR_AMBIGUOUS_COMMAND                = -6,
