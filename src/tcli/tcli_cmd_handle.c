@@ -1,5 +1,9 @@
 #include "tcli.h"
 
+#define PRINTF_ARG(...)
+// #include <stdio.h>
+// #define PRINTF_ARG(...) printf(__VA_ARGS__)
+
 static tcli_args_t args;
 
 int tcli_cmd_handle(char *buf)
@@ -25,36 +29,51 @@ int tcli_cmd_handle(char *buf)
 
 __attribute__((weak)) int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
 {
+    PRINTF_ARG("white:               %d\n", args->white);
+    PRINTF_ARG("wheat:               %d\n", args->wheat);
+    PRINTF_ARG("ketchup:             %d\n", args->ketchup);
+    PRINTF_ARG("mustard:             %d\n", args->mustard);
+    PRINTF_ARG("to_go:               %d\n", args->to_go);
+    PRINTF_ARG("name:                '%s'\n", args->name ? args->name : "NULL");
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 {
+    PRINTF_ARG("light_salt:          %d\n", args->light_salt);
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
 {
+    PRINTF_ARG("gravy:               %d\n", args->gravy);
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_grits(tcli_args_make_grits_t *args)
 {
+    PRINTF_ARG("butter:              %d\n", args->butter);
+    PRINTF_ARG("sugar:               %d\n", args->sugar);
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {
+    PRINTF_ARG("name:                '%s'\n", args->name ? args->name : "NULL");
+    PRINTF_ARG("address:             '%s'\n", args->address ? args->address : "NULL");
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 {
+    PRINTF_ARG("food:                '%s'\n", args->food ? args->food : "NULL");
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
 __attribute__((weak)) int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args)
 {
+    PRINTF_ARG("on:                  %d\n", args->on);
+    PRINTF_ARG("off:                 %d\n", args->off);
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 

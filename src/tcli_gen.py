@@ -283,6 +283,9 @@ def main():
 
 	x = ''
 	x += '#include "tcli.h"' + EOL + EOL
+	x += '#define PRINTF_ARG(...)' + EOL
+	x += '// #include <stdio.h>' + EOL
+	x += '// #define PRINTF_ARG(...) printf(__VA_ARGS__)' + EOL + EOL
 	x += 'static tcli_args_t args;' + EOL + EOL
 	x += 'int tcli_cmd_handle(char *buf)' + EOL
 	x += '{' + EOL
@@ -301,6 +304,12 @@ def main():
 		x += '__attribute__((weak)) int tcli_cmd_handle%s(tcli_args%s_t *args)' % (cmd.structName, cmd.structName)
 		x += EOL
 		x += '{' + EOL
+		for arg in cmd.args:
+			if arg.type == 'optBool':
+				x += '    PRINTF_ARG("%-20s %%d\\n", args->%s);' % (arg.cVarName+':', arg.cVarName) + EOL
+		for arg in cmd.args:
+			if arg.type != 'optBool':
+				x += '    PRINTF_ARG("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
 		x += '    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;' + EOL
 		x += '}' + EOL + EOL
 	if debug:
