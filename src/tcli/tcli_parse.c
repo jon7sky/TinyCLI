@@ -19,9 +19,9 @@ static void tcli_hash_init(void)
 
 static void tcli_hash_add(const char *buf)
 {
-    for (; *buf; buf++)
+    while (*buf)
     {
-        hash ^= *buf;
+        hash ^= *buf++;
         hash *= 0x01000193;
     }
 }
@@ -49,9 +49,9 @@ static void tcli_tokenize(char *buf)
     for (f = t = buf; *f;)
     {
         for (; *f == ' '; f++);
-        if ((c = *f) == '\'' || *f == '\"')
+        if (*f == '\'' || *f == '\"')
         {
-            for (f++; *f && (*t = *f++) != c; t++);
+            for (c = *f++; *f && (*t = *f++) != c; t++);
         }
         else
         {
@@ -223,7 +223,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
 const char *tcli_next_arg(const char *arg)
 {
-    if (!arg || !arg)
+    if (!arg || !*arg)
     {
         return NULL;
     }

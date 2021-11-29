@@ -13,9 +13,11 @@ int main(int argc, char *argv[])
         "make   burger   --wheat   --ketchup   --mustard   --name='Alice Jones'",
         "m bu -w -k -n 'Bob Smith' -g",
         "m b -w -k -n 'Bob Smith' -g",
+        "m biscuits --gravy",
         "make fries",
         "make fries --light-salt",
         "make fries --extra-salt",
+        "make grits --sugar",
         "deliver to Alice",
         "deliver to Bob '123 Main St'",
         "deliver to Charlie '666 Elm St' huh?",
@@ -60,6 +62,17 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
     return TCLI_OK;
 }
 
+int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
+{
+    printf("Making biscuits");
+    if (args->gravy)
+    {
+        printf(" with gravy");
+    }
+    printf("\n");
+    return TCLI_OK;
+}
+
 int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 {
     printf("Making fries");
@@ -70,6 +83,15 @@ int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
     printf("\n");
     return TCLI_OK;
 }
+
+// I don't know how to make grits
+#if 0
+int tcli_cmd_handle_make_grits(tcli_args_make_grits_t *args)
+{
+    printf("Making grits\n");
+    return TCLI_OK;
+}
+#endif
 
 int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {

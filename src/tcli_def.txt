@@ -6,7 +6,9 @@ make burger [options]  (-w,--white | -h,--wheat)
 
 make fries [-l,--light-salt]
 
-make biscuits
+make biscuits [-g,--gravy]
+
+make grits [-b,--butter -s,--sugar]
 
 deliver to <name> [<address>]
 
