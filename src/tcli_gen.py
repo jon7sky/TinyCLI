@@ -190,7 +190,11 @@ def main():
 				boolCnt += 1
 		x += '    bool_options_t _pad_:' + str(32-boolCnt) + ';' + EOL		
 		for arg in cmd.args:
-			if arg.type != 'optBool':
+			if arg.type == 'optVal':
+				varArgCnt += 1
+				x += '    char *' + arg.cVarName + ';' + EOL
+		for arg in cmd.args:
+			if arg.type.startswith('pos'):
 				varArgCnt += 1
 				x += '    char *' + arg.cVarName + ';' + EOL
 		x += '} tcli_args' + cmd.structName + '_t;' + EOL
@@ -308,7 +312,10 @@ def main():
 			if arg.type == 'optBool':
 				x += '    PRINTF_ARG("%-20s %%d\\n", args->%s);' % (arg.cVarName+':', arg.cVarName) + EOL
 		for arg in cmd.args:
-			if arg.type != 'optBool':
+			if arg.type == 'optVal':
+				x += '    PRINTF_ARG("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
+		for arg in cmd.args:
+			if arg.type.startswith('pos'):
 				x += '    PRINTF_ARG("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
 		x += '    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;' + EOL
 		x += '}' + EOL + EOL
