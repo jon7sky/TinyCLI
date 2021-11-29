@@ -63,11 +63,9 @@ static void tcli_tokenize(char *buf)
 
 #if DEBUG
     puts("Tokenized command line:");
-    t = buf;
-    while (*t)
+    for (t = buf; *t; t = tcli_next(t))
     {
         printf("\t%s\n", t);
-        t += strlen(t) + 1;
     }
 #endif
 }
