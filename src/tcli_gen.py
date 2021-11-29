@@ -83,6 +83,7 @@ def main():
 			if parsingKeywords:
 				if word[0].isalpha():
 					cmd.keywords.append(word)
+					word = formatCVarName(word)
 					cmd.structName += '_' + word
 				else:
 					parsingKeywords = False
@@ -109,7 +110,8 @@ def main():
 						else:
 							print('Unrecognized "' + word + '"')
 							return -1
-						arg.cVarName = formatCVarName(word)
+						cv = formatCVarName(word)
+						arg.cVarName = '$'+cv if cv[0].isnumeric() else cv
 						arg.longName = word
 						arg.optIdx = optValIdx
 						optValIdx += 1
@@ -130,7 +132,8 @@ def main():
 							arg.type = 'optBool'
 							arg.optIdx = optBoolIdx
 							optBoolIdx += 1
-						arg.cVarName = formatCVarName(arg.longName)
+						cv = formatCVarName(arg.longName)
+						arg.cVarName = '$'+cv if cv[0].isnumeric() else cv
 					arg.mutex = mutex
 					mutex = 1
 					arg.required = required
@@ -258,7 +261,7 @@ def main():
 		for arg in cmd.args:
 			if arg.type.startswith('opt'):
 				x += "    { .arg_def.short_char = '%s', " % (' ' if arg.shortName == '' else arg.shortName[1])
-				x += '.arg_def.hash = H(0x%x), ' % (hashCalc(arg.longName))
+				x += '.arg_def.hash = H(0x%08x), ' % (hashCalc(arg.longName))
 				x += '.arg_def.has_val = %d, ' % (1 if arg.type == 'optVal' else 0)
 				x += '.arg_def.mutex = %d, ' % (arg.mutex)
 				x += '.arg_def.required = %d }, ' % (arg.required)
@@ -289,9 +292,9 @@ def main():
 	x += '    switch (rc)' + EOL
 	x += '    {' + EOL
 	for cmd in cmds:
-		x += '    %-31s return tcli_cmd_handle%s(&args.%s);' % ('case CMD_ID'+cmd.structName+':', cmd.structName, cmd.structName[1:])
+		x += '    %-41s return tcli_cmd_handle%s(&args.%s);' % ('case CMD_ID'+cmd.structName+':', cmd.structName, cmd.structName[1:])
 		x += EOL
-	x += '    %-31s return TCLI_INTERNAL_ERROR;' % ('default:') + EOL
+	x += '    %-41s return TCLI_INTERNAL_ERROR;' % ('default:') + EOL
 	x += '    }' + EOL
 	x += '}' + EOL + EOL
 	for cmd in cmds:
