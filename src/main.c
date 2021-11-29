@@ -2,7 +2,36 @@
 #include <string.h>
 #include "tcli.h"
 
+void demo(void);
+
 int main(int argc, char *argv[])
+{
+    char buf[1000];
+    int rc;
+
+    while (1)
+    {
+        printf(">");
+        gets(buf);
+        if (strcmp(buf, "quit") == 0)
+        {
+            break;
+        }
+        else if (strcmp(buf, "demo") == 0)
+        {
+            demo();
+        }
+        else if (strlen(buf) > 0)
+        {
+            rc = tcli_cmd_handle(buf);
+            printf("Command returned %d : %s\n\n", rc, tcli_error(rc));
+        }
+    }
+
+    return 0;
+}
+
+void demo(void)
 {
     char buf[1000];
     const char **cmd;
@@ -39,13 +68,16 @@ int main(int argc, char *argv[])
         rc = tcli_cmd_handle(buf);
         printf("Command returned %d : %s\n\n", rc, tcli_error(rc));
     }
-
-    return 0;
 }
 
 int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
 {
-    printf("Making a burger for %s\n", args->name);
+    printf("Making a burger");
+    if (args->name)
+    {
+        printf(" for %s", args->name);
+    }
+    printf("\n");
     printf("Bun is %s\n", args->wheat ? "wheat" : "white");
     if (args->ketchup)
     {
