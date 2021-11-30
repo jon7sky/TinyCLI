@@ -31,6 +31,13 @@ static uint32_t tcli_hash_get_arg(void)
     return hash & ((1 << 22) - 1);
 }
 
+#if TCLI_USE_HASH_FOR_CMDS
+static uint32_t tcli_hash_get_cmd(void)
+{
+    return hash & ((1 << 20) - 1);
+}
+#endif
+
 static char *tcli_next(char *s)
 {
     if (*s)
@@ -69,6 +76,41 @@ static void tcli_tokenize(char *buf)
     }
 #endif
 }
+
+#if TCLI_USE_HASH_FOR_CMDS
+
+static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd_def_t **cmd_def)
+{
+    int i;
+    int cmd_id;
+    const tcli_cmd_def_t *cd;
+    char *buf = *buf_p;
+
+    cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
+    tcli_hash_init();
+    while (*buf && *buf != '-')
+    {
+        tcli_hash_add(buf);
+        hash = tcli_hash_get_cmd();
+        DEBUG_PRINTF("Adding '%s', hash is now 0x%08x\n", buf, hash);
+        for (i = 1, cd = &tcli_def->ca_def->cmd_def; cd->hash != 0; i++, cd += cd->arg_def_cnt + 1)
+        {
+            DEBUG_PRINTF("Hash for cmd %d is 0x%08x\n", i, cd->hash);
+            if (hash == cd->hash)
+            {
+                DEBUG_PRINTF("Found it!\n");
+                *buf_p = tcli_next(buf);
+                *cmd_def = cd;
+                cmd_id = i;
+            }
+        }
+        buf = tcli_next(buf);
+    }
+    DEBUG_PRINTF("Return cmd id %d\n", cmd_id);
+    return cmd_id;
+}
+
+#else // TCLI_USE_HASH_FOR_CMDS
 
 static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd_def_t **cmd_def)
 {
@@ -109,6 +151,8 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
     }
     return cmd_id;
 }
+
+#endif // TCLI_USE_HASH_FOR_CMDS
 
 int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 {

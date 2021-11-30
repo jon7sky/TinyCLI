@@ -29,8 +29,12 @@ typedef struct
 
 typedef struct
 {
+#if TCLI_USE_HASH_FOR_CMDS
+    uint32_t hash:20;
+#else
     uint32_t s1_idx:10;     // Command string table size 1024 bytes
     uint32_t s2_idx:10;
+#endif
     uint32_t arg_def_cnt:5; // 32 options per command
     uint32_t pos_cnt:3;     // 8 positional arguments
     uint32_t pos_req:3;

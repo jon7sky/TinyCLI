@@ -1,66 +1,51 @@
 #include "tcli.h"
 
-static const char tcli_string_tbl[] =
-    "*\000"                         // 0
-    "make\000"                      // 2
-    "burger\000"                    // 7
-    "fries\000"                     // 14
-    "biscuits\000"                  // 20
-    "grits\000"                     // 29
-    "deliver\000"                   // 35
-    "to\000"                        // 43
-    "eat\000"                       // 46
-    "turn\000"                      // 50
-    "grill\000"                     // 55
-    "help\000"                      // 61
-    ;
-
-#define H(x) ((x) & 0x3fffff)
+#define HA(x) ((x) & 0x003fffff)
+#define HC(x) ((x) & 0x000fffff)
 
 static const tcli_ca_def_t tcli_ca_def[] =
 {
     // make burger
-    { .cmd_def.s1_idx =   2, .cmd_def.s2_idx =   7, .cmd_def.arg_def_cnt =  6, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = 'w', .arg_def.hash = H(0x763a12d8), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // white
-    { .arg_def.short_char = 'h', .arg_def.hash = H(0xd4cc95ca), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // wheat
-    { .arg_def.short_char = 'k', .arg_def.hash = H(0x5a31f5db), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // ketchup
-    { .arg_def.short_char = 'm', .arg_def.hash = H(0xd091bf7b), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // mustard
-    { .arg_def.short_char = 'g', .arg_def.hash = H(0xe5d842ab), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // to_go
-    { .arg_def.short_char = 'n', .arg_def.hash = H(0xc4700b0c), .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // name
+    { .cmd_def.hash = HC(0x51e006ba), .cmd_def.arg_def_cnt =  6, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'w', .arg_def.hash = HA(0x763a12d8), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // white
+    { .arg_def.short_char = 'h', .arg_def.hash = HA(0xd4cc95ca), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // wheat
+    { .arg_def.short_char = 'k', .arg_def.hash = HA(0x5a31f5db), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // ketchup
+    { .arg_def.short_char = 'm', .arg_def.hash = HA(0xd091bf7b), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // mustard
+    { .arg_def.short_char = 'g', .arg_def.hash = HA(0xe5d842ab), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // to_go
+    { .arg_def.short_char = 'n', .arg_def.hash = HA(0xc4700b0c), .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // name
 
     // make fries
-    { .cmd_def.s1_idx =   2, .cmd_def.s2_idx =  14, .cmd_def.arg_def_cnt =  1, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = 'l', .arg_def.hash = H(0xcb9d1424), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // light_salt
+    { .cmd_def.hash = HC(0x0b401aae), .cmd_def.arg_def_cnt =  1, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'l', .arg_def.hash = HA(0xcb9d1424), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // light_salt
 
     // make biscuits
-    { .cmd_def.s1_idx =   2, .cmd_def.s2_idx =  20, .cmd_def.arg_def_cnt =  1, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = 'g', .arg_def.hash = H(0xd4901648), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // gravy
+    { .cmd_def.hash = HC(0x27d6741b), .cmd_def.arg_def_cnt =  1, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'g', .arg_def.hash = HA(0xd4901648), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // gravy
 
     // make grits
-    { .cmd_def.s1_idx =   2, .cmd_def.s2_idx =  29, .cmd_def.arg_def_cnt =  2, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = 'b', .arg_def.hash = H(0xa17f1011), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // butter
-    { .arg_def.short_char = 's', .arg_def.hash = H(0x4b5231af), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // sugar
+    { .cmd_def.hash = HC(0x512f0000), .cmd_def.arg_def_cnt =  2, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = 'b', .arg_def.hash = HA(0xa17f1011), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // butter
+    { .arg_def.short_char = 's', .arg_def.hash = HA(0x4b5231af), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // sugar
 
     // deliver to
-    { .cmd_def.s1_idx =  35, .cmd_def.s2_idx =  43, .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  2, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 0 },
+    { .cmd_def.hash = HC(0x4b82c5b3), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  2, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 0 },
 
     // eat
-    { .cmd_def.s1_idx =  46, .cmd_def.s2_idx =   0, .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  1, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 1 },
+    { .cmd_def.hash = HC(0x6c6e2525), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  1, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 1 },
 
     // turn grill
-    { .cmd_def.s1_idx =  50, .cmd_def.s2_idx =  55, .cmd_def.arg_def_cnt =  2, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
-    { .arg_def.short_char = ' ', .arg_def.hash = H(0x61342fd0), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // on
-    { .arg_def.short_char = ' ', .arg_def.hash = H(0xab3a8a0a), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // off
+    { .cmd_def.hash = HC(0x6bc1b5c2), .cmd_def.arg_def_cnt =  2, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = ' ', .arg_def.hash = HA(0x61342fd0), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // on
+    { .arg_def.short_char = ' ', .arg_def.hash = HA(0xab3a8a0a), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // off
 
     // help
-    { .cmd_def.s1_idx =  61, .cmd_def.s2_idx =   0, .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    { .cmd_def.hash = HC(0x3871a3fa), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
 
     // end of list
-    { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
+    { .cmd_def.hash = HC(0x00000000), .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },
 };
 
 const tcli_def_t tcli_def =
 {
     .ca_def = &tcli_ca_def[0],
-    .cmd_string_tbl = &tcli_string_tbl[0],
 };

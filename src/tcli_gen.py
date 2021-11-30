@@ -49,6 +49,7 @@ def main():
 	debug = False
 	cmds = []
 	EOL = '\n'
+	useStringTableForCmds = False
 
 	with open('tcli_def.txt', 'r') as f:
 		fileLines = f.readlines()
@@ -160,10 +161,9 @@ def main():
 		print('ArgStringTbl: "' + argStringTbl + '"')
 
 	x  = '#ifndef TCLI_DEF_H' + EOL
-	x += '#define TCLI_DEF_H' + EOL
-	x += '' + EOL
-	x +=	'#include <stdint.h>' + EOL
-	x +=	'' + EOL
+	x += '#define TCLI_DEF_H' + EOL + EOL
+	x += '#define TCLI_USE_HASH_FOR_CMDS %d' % (0 if useStringTableForCmds else 1) + EOL + EOL
+	x +=	'#include <stdint.h>' + EOL + EOL
 	x += '#define TCLI_USAGE_TEXT \\' + EOL
 	for line in fileLines:
 		x += '    "' + line.rstrip() + '\\n" \\' + EOL
@@ -174,8 +174,7 @@ def main():
 	for cmd in cmds:
 		x += '    CMD_ID' + cmd.structName + ',' + EOL
 	x += '    CMD_ID_CNT' + EOL
-	x += '};' + EOL
-	x += '' + EOL
+	x += '};' + EOL + EOL
 	x += 'typedef uint32_t bool_options_t;' + EOL
 	x += '' + EOL
 	maxVarArgCnt = 0
@@ -197,23 +196,20 @@ def main():
 			if arg.type.startswith('pos'):
 				varArgCnt += 1
 				x += '    char *' + arg.cVarName + ';' + EOL
-		x += '} tcli_args' + cmd.structName + '_t;' + EOL
-		x += '' + EOL
+		x += '} tcli_args' + cmd.structName + '_t;' + EOL + EOL
 		if varArgCnt > maxVarArgCnt:
 			maxVarArgCnt = varArgCnt
 	x += 'typedef struct' + EOL
 	x += '{' + EOL
 	x += '    bool_options_t bools;' + EOL
 	x += '    char *vals[' + str(maxVarArgCnt) + '];' + EOL
-	x += '} tcli_args_generic_t;' + EOL
-	x += '' + EOL
+	x += '} tcli_args_generic_t;' + EOL + EOL
 	x += 'typedef union' + EOL
 	x += '{' + EOL
 	x += '    tcli_args_generic_t generic;' + EOL
 	for cmd in cmds:
 		x += '    tcli_args' + cmd.structName + '_t ' + cmd.structName[1:] + ';' + EOL
-	x += '} tcli_args_t;' + EOL
-	x += '' + EOL
+	x += '} tcli_args_t;' + EOL + EOL
 	for cmd in cmds:
 		x += 'int tcli_cmd_handle' + cmd.structName +  '(tcli_args' + cmd.structName + '_t *args);' + EOL
 	x += '' + EOL
@@ -226,18 +222,23 @@ def main():
 	x = ''
 	x += '#include "tcli.h"' + EOL
 	x += '' + EOL
-	x += 'static const char tcli_string_tbl[] =' + EOL
-	for word in cmdStringTbl.split(':'):
-		if word != '':
-			x += '    %-31s // %d' % ('"'+word+'\\000"', cmdStringTbl.find(':'+word+':') + 1) + EOL
-	x += '    ;' + EOL + EOL
-	x += '#define H(x) ((x) & 0x3fffff)' + EOL +EOL
+	if useStringTableForCmds:
+		x += 'static const char tcli_string_tbl[] =' + EOL
+		for word in cmdStringTbl.split(':'):
+			if word != '':
+				x += '    %-31s // %d' % ('"'+word+'\\000"', cmdStringTbl.find(':'+word+':') + 1) + EOL
+		x += '    ;' + EOL + EOL
+	x += '#define HA(x) ((x) & 0x003fffff)' + EOL
+	x += '#define HC(x) ((x) & 0x000fffff)' + EOL + EOL
 	x += 'static const tcli_ca_def_t tcli_ca_def[] =' + EOL
 	x += '{' + EOL
 	for cmd in cmds:
 		x += '    //'
+		hashTxt = ''
 		for kw in cmd.keywords:
 			x += ' %s' % (kw)
+			hashTxt += kw
+		hash = hashCalc(hashTxt)
 		x += EOL
 		idx = [0,0]
 		for i in (0,1):
@@ -256,7 +257,10 @@ def main():
 					posReq += 1
 			if arg.type == 'posMulti':
 				posMulti = 1
-		x += '    { .cmd_def.s1_idx = %3d, .cmd_def.s2_idx = %3d, ' % (idx[0], idx[1])
+		if useStringTableForCmds:
+			x += '    { .cmd_def.s1_idx = %3d, .cmd_def.s2_idx = %3d, ' % (idx[0], idx[1])
+		else:
+			x += '    { .cmd_def.hash = HC(0x%08x), ' % (hash)			
 		x += '.cmd_def.arg_def_cnt = %2d, ' % (argCnt)
 		x += '.cmd_def.pos_cnt = %2d, ' % (posCnt)
 		x += '.cmd_def.pos_req = %2d, ' % (posReq)
@@ -265,7 +269,7 @@ def main():
 		for arg in cmd.args:
 			if arg.type.startswith('opt'):
 				x += "    { .arg_def.short_char = '%s', " % (' ' if arg.shortName == '' else arg.shortName[1])
-				x += '.arg_def.hash = H(0x%08x), ' % (hashCalc(arg.longName))
+				x += '.arg_def.hash = HA(0x%08x), ' % (hashCalc(arg.longName))
 				x += '.arg_def.has_val = %d, ' % (1 if arg.type == 'optVal' else 0)
 				x += '.arg_def.mutex = %d, ' % (arg.mutex)
 				x += '.arg_def.required = %d }, ' % (arg.required)
@@ -273,12 +277,16 @@ def main():
 				x += EOL
 		x += EOL
 	x += '    // end of list' + EOL
-	x += '    { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },' + EOL
+	if useStringTableForCmds:
+		x += '    { .cmd_def.s1_idx =  0, .cmd_def.s2_idx =  0, .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },' + EOL
+	else:
+		x += '    { .cmd_def.hash = HC(0x00000000), .cmd_def.arg_def_cnt = 0, .cmd_def.pos_cnt = 0, .cmd_def.pos_req = 0, .cmd_def.pos_multi = 0 },' + EOL
 	x += '};' + EOL + EOL
 	x += 'const tcli_def_t tcli_def =' + EOL
 	x += '{' + EOL
 	x += '    .ca_def = &tcli_ca_def[0],' + EOL
-	x += '    .cmd_string_tbl = &tcli_string_tbl[0],' + EOL
+	if useStringTableForCmds:
+		x += '    .cmd_string_tbl = &tcli_string_tbl[0],' + EOL
 	x += '};' + EOL
 	if debug:
 		print(x)

@@ -1,6 +1,8 @@
 #ifndef TCLI_DEF_H
 #define TCLI_DEF_H
 
+#define TCLI_USE_HASH_FOR_CMDS 1
+
 #include <stdint.h>
 
 #define TCLI_USAGE_TEXT \
