@@ -75,7 +75,7 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
     printf("Making a burger");
     if (args->name)
     {
-        printf(" for %s", args->name);
+        printf(" for '%s'", args->name);
     }
     printf("\n");
     printf("Bun is %s\n", args->wheat ? "wheat" : "white");
@@ -142,7 +142,7 @@ int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 
     for (food = args->food; food; food = tcli_next_arg(food))
     {
-        printf("Eating: %s\n", food);
+        printf("Eating: '%s'\n", food);
     }
     return TCLI_OK;
 }

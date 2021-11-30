@@ -40,7 +40,7 @@ static uint32_t tcli_hash_get_cmd(void)
 
 static char *tcli_next(char *s)
 {
-    if (*s)
+    if (*s >= 0)
     {
         s += strlen(s) + 1;
     }
@@ -55,7 +55,11 @@ static void tcli_tokenize(char *buf)
 
     for (f = t = buf; *f;)
     {
-        for (; *f == ' '; f++);
+        if (*f == ' ')
+        {
+            f++;
+            continue;
+        }
         if (*f == '\'' || *f == '\"')
         {
             for (c = *f++; *f && (*t = *f++) != c; t++);
@@ -66,11 +70,11 @@ static void tcli_tokenize(char *buf)
         }
         *t++ = 0;
     }
-    *t = 0;
+    *t = -1;
 
 #if DEBUG
     puts("Tokenized command line:");
-    for (t = buf; *t; t = tcli_next(t))
+    for (t = buf; *t >= 0; t = tcli_next(t))
     {
         printf("\t%s\n", t);
     }
@@ -88,7 +92,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
 
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
     tcli_hash_init();
-    while (*buf && *buf != '-')
+    while (*buf > 0 && *buf != '-')
     {
         tcli_hash_add(buf);
         hash = tcli_hash_get_cmd();
@@ -187,7 +191,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     }
     DEBUG_PRINTF("Options required: 0x%08x\n", options_required);
 
-    while (*buf)
+    while (*buf != -1)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
@@ -248,10 +252,10 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
             {
                 DEBUG_PRINTF("Assigned multi arg\n");
-                for (; *buf; buf = tcli_next(buf));
+                for (; *buf >= 0; buf++);
             }
         }
-        if (*buf)
+        if (*buf != -1)
         {
             buf = tcli_next(buf);
         }
@@ -267,10 +271,10 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
 const char *tcli_next_arg(const char *arg)
 {
-    if (!arg || !*arg)
+    if (!arg || *arg < 0)
     {
         return NULL;
     }
     arg += strlen(arg) + 1;
-    return *arg ? arg : NULL;
+    return *arg < 0 ? NULL : arg;
 }
