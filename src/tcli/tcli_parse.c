@@ -40,9 +40,10 @@ static uint32_t tcli_hash_get_cmd(void)
 
 static char *tcli_next(char *s)
 {
-    if (*s >= 0)
+    if (*s != -1)
     {
-        s += strlen(s) + 1;
+        for (; *s; s++);
+        s++;
     }
     return s;
 }
@@ -271,10 +272,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
 const char *tcli_next_arg(const char *arg)
 {
-    if (!arg || *arg < 0)
+    if (!arg || *arg == -1)
     {
         return NULL;
     }
-    arg += strlen(arg) + 1;
-    return *arg < 0 ? NULL : arg;
+    for (; *arg; arg++);
+    arg++;
+    return *arg == -1 ? NULL : arg;
 }

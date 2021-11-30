@@ -127,10 +127,10 @@ int tcli_cmd_handle_make_grits(tcli_args_make_grits_t *args)
 
 int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {
-    printf("Delivering order to %s", args->name);
+    printf("Delivering order to '%s'", args->name);
     if (args->address)
     {
-        printf(" at %s", args->address);
+        printf(" at '%s'", args->address);
     }
     printf("\n");
     return TCLI_OK;
