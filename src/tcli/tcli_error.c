@@ -13,6 +13,7 @@ const char *tcli_error(int error)
     case TCLI_ERROR_AMBIGUOUS_COMMAND:              return("Ambiguous command");
     case TCLI_INTERNAL_ERROR:                       return("Internal error");
     case TCLI_ERROR_TOO_MANY_ARGS:                  return("Too many arguments");
+    case TCLI_ERROR_MALFORMED_ARG:                  return("Malformed argument");
     default:                                        return("Unknown error code");
     }
 }

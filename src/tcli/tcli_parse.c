@@ -211,6 +211,10 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
                     buf = tcli_next(buf);
+                    if (*buf == -1)
+                    {
+                        return TCLI_ERROR_MALFORMED_ARG;
+                    }
                     args->generic.vals[val_idx] = buf;
                 }
                 val_idx++;
