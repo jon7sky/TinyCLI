@@ -257,13 +257,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
             {
                 DEBUG_PRINTF("Assigned multi arg\n");
-                for (; *buf >= 0; buf++);
+                for (; *buf != -1; buf++);
             }
         }
-        if (*buf != -1)
-        {
-            buf = tcli_next(buf);
-        }
+
+        buf = tcli_next(buf);
     }
     if ((options_required & options_provided) != options_required || pos_idx < cmd_def->pos_req)
     {
