@@ -112,7 +112,7 @@ def main():
 							print('Unrecognized "' + word + '"')
 							return -1
 						cv = formatCVarName(word)
-						arg.cVarName = '$'+cv if cv[0].isnumeric() else cv
+						arg.cVarName = '_'+cv if cv[0].isnumeric() else cv
 						arg.longName = word
 						arg.optIdx = optValIdx
 						optValIdx += 1
