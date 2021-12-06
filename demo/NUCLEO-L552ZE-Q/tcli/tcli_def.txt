@@ -1,0 +1,19 @@
+make burger [options]  (-w,--white | -h,--wheat)
+    -k, --ketchup       Add ketchup 
+    -m, --mustard       Add Mustard
+    -g, --to-go         Make it to go
+    -n, --name=<name>   Add name
+
+make fries [-l,--light-salt]
+
+make biscuits [-g,--gravy]
+
+make grits [-b,--butter -s,--sugar]
+
+deliver to <name> [<address>]
+
+eat <food>...
+
+turn grill (on | off)
+
+help
