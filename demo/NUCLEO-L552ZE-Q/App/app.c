@@ -49,14 +49,14 @@ void app_run(void)
 	else if (c == CHAR_CR)
 	{
 		puts("");
-		if (strlen(buf) > 0)
+		buf[buf_idx] = 0;
+		if (buf_idx > 0)
 		{
 			rc = tcli_cmd_handle(&buf[0]);
 			puts(tcli_error(rc));
 		}
 		buf_idx = -1;
 	}
-	buf[buf_idx] = 0;
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
