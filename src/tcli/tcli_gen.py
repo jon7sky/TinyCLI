@@ -1,6 +1,5 @@
 import sys
 import os
-from termios import CEOL
 
 class Cmd:
 	def __init__(self):
@@ -216,8 +215,9 @@ def main():
 	x += '#endif' + EOL
 	if debug:
 		print(x)
-	with open(os.path.join('tcli', 'tcli_def.h'), 'w') as f:
+	with open(os.path.join('tcli_def.h'), 'w') as f:
 		f.write(x)
+
 
 	x = ''
 	x += '#include "tcli.h"' + EOL
@@ -290,8 +290,9 @@ def main():
 	x += '};' + EOL
 	if debug:
 		print(x)
-	with open(os.path.join('tcli', 'tcli_def.c'), 'w') as f:
+	with open(os.path.join('tcli_def.c'), 'w') as f:
 		f.write(x)
+
 
 	x = ''
 	x += '#include "tcli.h"' + EOL + EOL
@@ -329,8 +330,9 @@ def main():
 		x += '}' + EOL + EOL
 	if debug:
 		print(x)
-	with open(os.path.join('tcli', 'tcli_cmd_handle.c'), 'w') as f:
+	with open(os.path.join('tcli_cmd_handle.c'), 'w') as f:
 		f.write(x)	
+
 	
 	return 0
 
