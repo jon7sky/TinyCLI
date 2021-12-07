@@ -2,6 +2,7 @@
 #include <string.h>
 #include "tcli.h"
 
+#undef DEBUG
 #define DEBUG 0
 
 #if DEBUG
@@ -9,6 +10,8 @@
 #else
 #define DEBUG_PRINTF(...)
 #endif
+
+#define END_OF_BUF 1
 
 static uint32_t hash;
 
@@ -40,7 +43,7 @@ static uint32_t tcli_hash_get_cmd(void)
 
 static char *tcli_next(char *s)
 {
-    if (*s != -1)
+    if (*s != END_OF_BUF)
     {
         for (; *s; s++);
         s++;
@@ -71,11 +74,11 @@ static void tcli_tokenize(char *buf)
         }
         *t++ = 0;
     }
-    *t = -1;
+    *t = END_OF_BUF;
 
 #if DEBUG
     puts("Tokenized command line:");
-    for (t = buf; *t >= 0; t = tcli_next(t))
+    for (t = buf; *t != END_OF_BUF; t = tcli_next(t))
     {
         printf("\t%s\n", t);
     }
@@ -93,7 +96,7 @@ static int find_cmd_def(const tcli_def_t *tcli_def, char **buf_p, const tcli_cmd
 
     cmd_id = TCLI_ERROR_COMMAND_NOT_FOUND;
     tcli_hash_init();
-    while (*buf > 0 && *buf != '-')
+    while (*buf > ' ' && *buf != '-')
     {
         tcli_hash_add(buf);
         hash = tcli_hash_get_cmd();
@@ -192,7 +195,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
     }
     DEBUG_PRINTF("Options required: 0x%08x\n", options_required);
 
-    while (*buf != -1)
+    while (*buf != END_OF_BUF)
     {
         DEBUG_PRINTF("Next arg is '%s'\n", buf);
         option_bit = 0;
@@ -211,7 +214,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
                     DEBUG_PRINTF("That's it\n");
                     option_bit = (1 << mutex_idx);
                     buf = tcli_next(buf);
-                    if (*buf == -1)
+                    if (*buf == END_OF_BUF)
                     {
                         return TCLI_ERROR_MALFORMED_ARG;
                     }
@@ -257,7 +260,7 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
             if (pos_idx >= cmd_def->pos_cnt && cmd_def->pos_multi)
             {
                 DEBUG_PRINTF("Assigned multi arg\n");
-                for (; *buf != -1; buf++);
+                for (; *buf != END_OF_BUF; buf++);
             }
         }
 
@@ -274,11 +277,11 @@ int tcli_parse(char *buf, const tcli_def_t *tcli_def, tcli_args_t *args)
 
 const char *tcli_next_arg(const char *arg)
 {
-    if (!arg || *arg == -1)
+    if (!arg || *arg == END_OF_BUF)
     {
         return NULL;
     }
     for (; *arg; arg++);
     arg++;
-    return *arg == -1 ? NULL : arg;
+    return *arg == END_OF_BUF ? NULL : arg;
 }
