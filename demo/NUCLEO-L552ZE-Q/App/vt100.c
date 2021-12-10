@@ -48,8 +48,8 @@ int getchar(void)
     	{
     	case 'A':	return CHAR_UP;
     	case 'B':	return CHAR_DOWN;
-    	case 'C':	return CHAR_LEFT;
-    	case 'D':	return CHAR_RIGHT;
+    	case 'C':	return CHAR_RIGHT;
+    	case 'D':	return CHAR_LEFT;
     	default:	break;
     	}
     }

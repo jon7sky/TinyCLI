@@ -21,13 +21,17 @@ static char buf[256];
 void app_run(void)
 {
 	int c;
-	static int buf_idx = -1;
+	int i;
 	int rc;
+	static int buf_idx = 0;
+	static int buf_len = 0;
 
-	if (buf_idx < 0)
+	if (buf_idx == 0)
 	{
-		putchar('>');
-		buf_idx = 0;
+		buf[0] = '>';
+		buf[1] = 0;
+		buf_idx = buf_len = 1;
+		printf(buf);
 	}
 
 	if ((c = getchar()) == EOF)
@@ -35,28 +39,44 @@ void app_run(void)
 		return;
 	}
 
-	if (c >= ' ' && c < CHAR_DEL && buf_idx < (sizeof(buf) - 2))
+	switch (c)
 	{
-		putchar(c);
-		buf[buf_idx] = c;
-		buf_idx++;
-	}
-	else if (c == CHAR_BS)
-	{
-		buf_idx--;
-		printf("\010 \010");
-	}
-	else if (c == CHAR_CR)
-	{
-		puts("");
-		buf[buf_idx] = 0;
-		if (buf_idx > 0)
+	case CHAR_CR:
+		printf("\n");
+		rc = tcli_cmd_handle(&buf[1]);
+		puts(tcli_error(rc));
+		buf_len = buf_idx = 0;
+		return;
+	case CHAR_BS:
+		if (buf_idx > 1)
 		{
-			rc = tcli_cmd_handle(&buf[0]);
-			puts(tcli_error(rc));
+			buf_idx--;
+			buf_len--;
+			for (i = buf_idx; i < buf_len; buf[i] = buf[i+1], i++);
 		}
-		buf_idx = -1;
+		break;
+	case CHAR_LEFT:
+		if (buf_idx > 1)
+		{
+			buf_idx--;
+		}
+		break;
+	case CHAR_RIGHT:
+		if (buf_idx < buf_len)
+		{
+			buf_idx++;
+		}
+		break;
+	default:
+		if (c >= ' ' && c < CHAR_DEL && buf_len < (sizeof(buf) - 2))
+		{
+			for (i = buf_len; i > buf_idx; buf[i] = buf[i-1], i--);
+			buf[buf_idx++] = c;
+		}	buf_len++;
+		break;
 	}
+	buf[buf_len] = 0;
+	printf("\033[999D%s\033[K\033[999D\033[%dC", buf, buf_idx);
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
