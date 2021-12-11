@@ -1,13 +1,6 @@
-/*
- * app.c
- *
- *  Created on: Dec 5, 2021
- *      Author: john
- */
-
 #include <stdio.h>
+#include "term.h"
 #include "main.h"
-#include "vt100.h"
 #include "tcli.h"
 
 void app_init(void)
@@ -18,7 +11,14 @@ void app_init(void)
 
 void app_run(void)
 {
-	vt100_run();
+}
+
+void term_cmd_exe(char *buf)
+{
+	int rc;
+
+	rc = tcli_cmd_handle(buf);
+	puts(tcli_error(rc));
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
@@ -40,7 +40,7 @@ int tcli_cmd_handle_led(tcli_args_led_t *args)
 
 int tcli_cmd_handle_button_wait(tcli_args_button_wait_t *args)
 {
-	puts("Press the USER button. I'll wait.");
+	puts("Press the blue USER button. I'll wait.");
 	while (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin) == GPIO_PIN_RESET);
 	puts("Button pressed!");
 	return TCLI_OK;

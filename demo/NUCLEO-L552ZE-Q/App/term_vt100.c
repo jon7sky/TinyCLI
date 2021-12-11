@@ -1,13 +1,6 @@
-/*
- * vt100.c
- *
- *  Created on: Dec 5, 2021
- *      Author: john
- */
-
-#include "main.h"
-#include "vt100.h"
 #include <stdio.h>
+#include "main.h"
+#include "term.h"
 
 UART_HandleTypeDef hlpuart1;
 
@@ -69,7 +62,12 @@ int _write(int file, char *ptr, int len) {
 	return len;
 }
 
-void vt100_run(void)
+void term_init(void)
+{
+
+}
+
+void term_run(void)
 {
 	static state_t state = INIT;
 	static int buf_len = 0;
@@ -105,7 +103,7 @@ void vt100_run(void)
 			printf(VT100_CURSOR_BOL);
 			i = buf_len / line_len + 1;
 			printf(VT100_CURSOR_DOWN "\n", i);
-			printf("CMD: '%s'\n", b+1);
+			term_cmd_exe(b+1);
 			state = INIT;
 			return;
 		case ASCII_ESC:
@@ -187,4 +185,9 @@ void vt100_run(void)
 	if ((i = buf_idx / line_len) > 0) printf(VT100_CURSOR_DOWN, i);
 
 	return;
+}
+
+__attribute__((weak)) void term_cmd_exe(char *buf)
+{
+	printf("Exe Cmd: '%s'\n", buf);
 }
