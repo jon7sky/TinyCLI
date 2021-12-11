@@ -10,13 +10,15 @@
 #include "vt100.h"
 #include "tcli.h"
 
-#define CRSR_BOL	"\033[999D"
-#define CRSR_EOL	"\033[999C"
-#define CRSR_UP		"\033[%dA"
-#define CRSR_DOWN	"\033[%dB"
-#define CRSR_RIGHT	"\033[%dC"
-#define CRSR_LEFT	"\033[%dD"
-#define ERASE_TO_END_OF_SCREEN	"\033[0J"
+#define VT100_CURSOR_BOL		"\033[999D"
+#define VT100_CURSOR_EOL		"\033[999C"
+#define VT100_CURSOR_UP			"\033[%dA"
+#define VT100_CURSOR_DOWN		"\033[%dB"
+#define VT100_CURSOR_RIGHT		"\033[%dC"
+#define VT100_CURSOR_LEFT		"\033[%dD"
+#define VT100_ERASE_EOS			"\033[0J"
+#define VT100_SAVE_CURSOR		"\0337"
+#define VT100_RESTORE_CURSOR	"\0338"
 
 typedef enum
 {
@@ -63,12 +65,14 @@ void app_run(void)
 		return;
 	}
 
+#if 0
 	if (state != INIT)
 	{
 		i = buf_idx / line_len;
-		printf(CRSR_BOL);
-		if (i) printf(CRSR_UP, i);
+		printf(VT100_CURSOR_BOL);
+		if (i) printf(VT100_CURSOR_UP, i);
 	}
+#endif
 
 	switch (state)
 	{
@@ -77,14 +81,15 @@ void app_run(void)
 		b[1] = 0;
 		buf_idx = buf_len = 1;
 		state = CHAR;
-		break;
+		printf(VT100_SAVE_CURSOR ">");
+		return;
 	case CHAR:
 		switch (c)
 		{
 		case ASCII_CR:
-			printf(CRSR_BOL);
+			printf(VT100_CURSOR_BOL);
 			i = buf_len / line_len + 1;
-			printf(CRSR_DOWN "\n", i);
+			printf(VT100_CURSOR_DOWN "\n", i);
 			printf("CMD: '%s'\n", b+1);
 			state = INIT;
 			return;
@@ -114,37 +119,41 @@ void app_run(void)
 	case GOT_ESC_LB:
 		switch (c)
 		{
-		case 'A':
+		case 'A': // Cursor up
+		case 'B': // Cursor down
+			state = CHAR;
 			break;
-		case 'B':
-			break;
-		case 'C':
-			if (buf_idx < buf_len)
+		case 'C': // Cursor right
+		case 'D': // Cursor left
+			if (c == 'C' && buf_idx < buf_len)
 			{
 				buf_idx++;
 			}
-			break;
-		case 'D':
-			if (buf_idx > 1)
+			if (c == 'D' && buf_idx > 1)
 			{
 				buf_idx--;
 			}
-			break;
+			printf(VT100_RESTORE_CURSOR);
+			if ((i = buf_idx % line_len) > 0) printf(VT100_CURSOR_RIGHT, i);
+			if ((i = buf_idx / line_len) > 0) printf(VT100_CURSOR_DOWN, i);
+			state = CHAR;
+			return;
 		default:
+			state = CHAR;
 			break;
 		}
-		state = CHAR;
 	}
+
 	b[buf_len] = 0;
-	i = buf_len / line_len;
-	printf("%s", b);
+	printf(VT100_RESTORE_CURSOR "%s", b);
 	if ((buf_len % line_len) == 0) printf(" ");
-	printf(ERASE_TO_END_OF_SCREEN CRSR_BOL);
-	if (i) printf(CRSR_UP, i);
-	i = buf_idx % line_len;
-	if (i) printf(CRSR_RIGHT, i);
-	i = buf_idx / line_len;
-	if (i) printf(CRSR_DOWN, i);
+	printf(VT100_ERASE_EOS VT100_CURSOR_BOL);
+	if ((i = buf_len / line_len) > 0) printf(VT100_CURSOR_UP, i);
+	// Cursor should now be sitting right at the '>' prompt.
+	// Save the position and then move it to where it's supposed to be.
+	printf(VT100_SAVE_CURSOR);
+	if ((i = buf_idx % line_len) > 0) printf(VT100_CURSOR_RIGHT, i);
+	if ((i = buf_idx / line_len) > 0) printf(VT100_CURSOR_DOWN, i);
 
 	return;
 }
