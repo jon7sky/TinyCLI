@@ -8,6 +8,7 @@
 #ifndef VT100_H_
 #define VT100_H_
 
+#if 0
 enum
 {
 	CHAR_BS = 8,
@@ -19,5 +20,7 @@ enum
 	CHAR_LEFT,
 	CHAR_RIGHT
 };
+#endif
+void vt100_run(void);
 
 #endif /* VT100_H_ */
