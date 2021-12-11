@@ -10,73 +10,143 @@
 #include "vt100.h"
 #include "tcli.h"
 
+#define CRSR_BOL	"\033[999D"
+#define CRSR_EOL	"\033[999C"
+#define CRSR_UP		"\033[%dA"
+#define CRSR_DOWN	"\033[%dB"
+#define CRSR_RIGHT	"\033[%dC"
+#define CRSR_LEFT	"\033[%dD"
+#define ERASE_TO_END_OF_SCREEN	"\033[0J"
+
+typedef enum
+{
+	INIT,
+	CHAR,
+	GOT_ESC,
+	GOT_ESC_LB
+} state_t;
+
+enum
+{
+	ASCII_BS = 8,
+	ASCII_LF = 10,
+	ASCII_CR = 13,
+	ASCII_ESC = 27,
+	ASCII_DEL = 127,
+};
+
 void app_init(void)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
 	puts("\nTinyCLI Demo\n");
 }
 
-static char buf[256];
+#define BUF_CNT 	4
+#define BUF_SIZE	256
+static char buf[BUF_CNT][BUF_SIZE];
 
 void app_run(void)
 {
+	static state_t state = INIT;
+	static int buf_len = 0;
+	static int buf_idx = 0;
+	static int cur_buf_idx = 0;
+	static int line_len = 25;
+	char *b;
 	int c;
 	int i;
-	int rc;
-	static int buf_idx = 0;
-	static int buf_len = 0;
 
-	if (buf_idx == 0)
+	b = &buf[cur_buf_idx][0];
+
+	if (state != INIT && (c = getchar()) == EOF)
 	{
-		buf[0] = '>';
-		buf[1] = 0;
+		return;
+	}
+
+	if (state != INIT)
+	{
+		i = buf_idx / line_len;
+		printf(CRSR_BOL);
+		if (i) printf(CRSR_UP, i);
+	}
+
+	switch (state)
+	{
+	case INIT:
+		b[0] = '>';
+		b[1] = 0;
 		buf_idx = buf_len = 1;
-		printf(buf);
+		state = CHAR;
+		break;
+	case CHAR:
+		switch (c)
+		{
+		case ASCII_CR:
+			printf(CRSR_BOL);
+			i = buf_len / line_len + 1;
+			printf(CRSR_DOWN "\n", i);
+			printf("CMD: '%s'\n", b+1);
+			state = INIT;
+			return;
+		case ASCII_ESC:
+			state = GOT_ESC;
+			break;
+		case ASCII_BS:
+			if (buf_idx > 1)
+			{
+				buf_idx--;
+				buf_len--;
+				for (i = buf_idx; i < buf_len; b[i] = b[i+1], i++);
+			}
+			break;
+		default:
+			if (c >= ' ' && c < CHAR_DEL && buf_len < (BUF_SIZE - 2))
+			{
+				for (i = buf_len; i > buf_idx; b[i] = b[i-1], i--);
+				b[buf_idx++] = c;
+			}	buf_len++;
+			break;
+		}
+		break;
+	case GOT_ESC:
+		state = (c == '[' ? GOT_ESC_LB : CHAR);
+		break;
+	case GOT_ESC_LB:
+		switch (c)
+		{
+		case 'A':
+			break;
+		case 'B':
+			break;
+		case 'C':
+			if (buf_idx < buf_len)
+			{
+				buf_idx++;
+			}
+			break;
+		case 'D':
+			if (buf_idx > 1)
+			{
+				buf_idx--;
+			}
+			break;
+		default:
+			break;
+		}
+		state = CHAR;
 	}
+	b[buf_len] = 0;
+	i = buf_len / line_len;
+	printf("%s", b);
+	if ((buf_len % line_len) == 0) printf(" ");
+	printf(ERASE_TO_END_OF_SCREEN CRSR_BOL);
+	if (i) printf(CRSR_UP, i);
+	i = buf_idx % line_len;
+	if (i) printf(CRSR_RIGHT, i);
+	i = buf_idx / line_len;
+	if (i) printf(CRSR_DOWN, i);
 
-	if ((c = getchar()) == EOF)
-	{
-		return;
-	}
-
-	switch (c)
-	{
-	case CHAR_CR:
-		printf("\n");
-		rc = tcli_cmd_handle(&buf[1]);
-		puts(tcli_error(rc));
-		buf_len = buf_idx = 0;
-		return;
-	case CHAR_BS:
-		if (buf_idx > 1)
-		{
-			buf_idx--;
-			buf_len--;
-			for (i = buf_idx; i < buf_len; buf[i] = buf[i+1], i++);
-		}
-		break;
-	case CHAR_LEFT:
-		if (buf_idx > 1)
-		{
-			buf_idx--;
-		}
-		break;
-	case CHAR_RIGHT:
-		if (buf_idx < buf_len)
-		{
-			buf_idx++;
-		}
-		break;
-	default:
-		if (c >= ' ' && c < CHAR_DEL && buf_len < (sizeof(buf) - 2))
-		{
-			for (i = buf_len; i > buf_idx; buf[i] = buf[i-1], i--);
-			buf[buf_idx++] = c;
-		}	buf_len++;
-		break;
-	}
-	buf[buf_len] = 0;
-	printf("\033[999D%s\033[K\033[999D\033[%dC", buf, buf_idx);
+	return;
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)

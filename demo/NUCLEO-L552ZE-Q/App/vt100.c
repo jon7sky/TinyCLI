@@ -29,6 +29,8 @@ int getchar(void)
     {
     	return EOF;
     }
+    return b;
+#if 0
     switch (state)
     {
     case READ_STATE_PASSTHROUGH:
@@ -54,6 +56,7 @@ int getchar(void)
     	}
     }
     return EOF;
+#endif
 }
 
 int _write(int file, char *ptr, int len) {
