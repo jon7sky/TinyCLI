@@ -16,12 +16,14 @@ void app_run(void)
 void term_cmd_exe(char *buf)
 {
 	int rc;
+	static char tcli_buf[256];
 
 	if (*buf == 0)
 	{
 		return;
 	}
-	rc = tcli_cmd_handle(buf);
+	strncpy(tcli_buf, buf, sizeof(tcli_buf));
+	rc = tcli_cmd_handle(tcli_buf);
 	puts(tcli_error(rc));
 }
 

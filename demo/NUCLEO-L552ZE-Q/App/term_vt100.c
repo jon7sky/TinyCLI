@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "term.h"
 
 #define VT100_CURSOR_BOL		"\033[999D"
@@ -32,11 +33,16 @@ enum
 #define ACCUM_SIZE	2
 #define BUF_CNT 	4
 #define BUF_SIZE	256
-static char buf[BUF_CNT][BUF_SIZE];
+static char buf[BUF_CNT][BUF_SIZE] = {0, };
 
 void term_init(void)
 {
-
+	int i;
+	for (i = 0; i < BUF_CNT; i++)
+	{
+		buf[i][0] = '>';
+		buf[i][1] = 0;
+	}
 }
 
 void term_run(void)
@@ -76,6 +82,7 @@ void term_run(void)
 			i = buf_len / line_len + 1;
 			printf(VT100_CURSOR_DOWN "\n", i);
 			term_cmd_exe(b+1);
+			cur_buf_idx = (cur_buf_idx + 1) % BUF_CNT;
 			state = STATE_INIT;
 			return;
 		case ASCII_ESC:
@@ -123,8 +130,12 @@ void term_run(void)
 			return;
 		case 'A': // Cursor up
 		case 'B': // Cursor down
+			cur_buf_idx = (cur_buf_idx + BUF_CNT +(c == 'B' ? 1 : -1)) % BUF_CNT;
+			b = &buf[cur_buf_idx][0];
+			buf_len = buf_idx = strlen(b);
 			state = STATE_CHAR;
-			return;
+			printf(VT100_RESTORE_CURSOR VT100_ERASE_EOS);
+			break;
 		case 'C': // Cursor right
 		case 'D': // Cursor left
 			if (c == 'C' && buf_idx < buf_len)
