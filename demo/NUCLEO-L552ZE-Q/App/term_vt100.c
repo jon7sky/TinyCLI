@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include "main.h"
 #include "term.h"
-
-UART_HandleTypeDef hlpuart1;
 
 #define VT100_CURSOR_BOL		"\033[999D"
 #define VT100_CURSOR_EOL		"\033[999C"
@@ -17,10 +14,10 @@ UART_HandleTypeDef hlpuart1;
 
 typedef enum
 {
-	INIT,
-	CHAR,
-	GOT_ESC,
-	GOT_ESC_LB
+	STATE_INIT,
+	STATE_CHAR,
+	STATE_GOT_ESC,
+	STATE_GOT_ESC_LB
 } state_t;
 
 enum
@@ -37,31 +34,6 @@ enum
 #define BUF_SIZE	256
 static char buf[BUF_CNT][BUF_SIZE];
 
-int getchar(void)
-{
-    HAL_StatusTypeDef hstatus;
-    uint8_t b;
-    hstatus = HAL_UART_Receive(&hlpuart1, &b, 1, 0);
-    return (hstatus != HAL_OK ? EOF : b);
-}
-
-int _write(int file, char *ptr, int len) {
-	int i;
-	uint8_t b;
-
-    for (i = 0; i < len; i++)
-    {
-    	b = (uint8_t)*ptr++;
-    	HAL_UART_Transmit(&hlpuart1, &b, 1, HAL_MAX_DELAY);
-    	if (b == '\n')
-    	{
-    		b = '\r';
-        	HAL_UART_Transmit(&hlpuart1, &b, 1, HAL_MAX_DELAY);
-    	}
-    }
-	return len;
-}
-
 void term_init(void)
 {
 
@@ -69,7 +41,7 @@ void term_init(void)
 
 void term_run(void)
 {
-	static state_t state = INIT;
+	static state_t state = STATE_INIT;
 	static int buf_len = 0;
 	static int buf_idx = 0;
 	static int cur_buf_idx = 0;
@@ -82,21 +54,21 @@ void term_run(void)
 
 	b = &buf[cur_buf_idx][0];
 
-	if (state != INIT && (c = getchar()) == EOF)
+	if (state != STATE_INIT && (c = getchar()) == EOF)
 	{
 		return;
 	}
 
 	switch (state)
 	{
-	case INIT:
+	case STATE_INIT:
 		b[0] = '>';
 		b[1] = 0;
 		buf_idx = buf_len = 1;
-		state = CHAR;
+		state = STATE_CHAR;
 		printf(VT100_CURSOR_EOL VT100_ACTIVE_POS_REPORT VT100_CURSOR_BOL VT100_SAVE_CURSOR ">");
 		return;
-	case CHAR:
+	case STATE_CHAR:
 		switch (c)
 		{
 		case ASCII_CR:
@@ -104,10 +76,10 @@ void term_run(void)
 			i = buf_len / line_len + 1;
 			printf(VT100_CURSOR_DOWN "\n", i);
 			term_cmd_exe(b+1);
-			state = INIT;
+			state = STATE_INIT;
 			return;
 		case ASCII_ESC:
-			state = GOT_ESC;
+			state = STATE_GOT_ESC;
 			return;
 		case ASCII_BS:
 			if (buf_idx > 1)
@@ -126,12 +98,12 @@ void term_run(void)
 			break;
 		}
 		break;
-	case GOT_ESC:
+	case STATE_GOT_ESC:
 		accum_idx = 0;
 		accum[0] = accum[1] = 0;
-		state = (c == '[' ? GOT_ESC_LB : CHAR);
+		state = (c == '[' ? STATE_GOT_ESC_LB : STATE_CHAR);
 		return;
-	case GOT_ESC_LB:
+	case STATE_GOT_ESC_LB:
 		if (c >= '0' && c <= '9')
 		{
 			accum[accum_idx] = accum[accum_idx] * 10 + (c & 0xf);
@@ -147,11 +119,11 @@ void term_run(void)
 			return;
 		case 'R': // Cursor position report
 			line_len = accum[1];
-			state = CHAR;
+			state = STATE_CHAR;
 			return;
 		case 'A': // Cursor up
 		case 'B': // Cursor down
-			state = CHAR;
+			state = STATE_CHAR;
 			return;
 		case 'C': // Cursor right
 		case 'D': // Cursor left
@@ -166,10 +138,10 @@ void term_run(void)
 			printf(VT100_RESTORE_CURSOR);
 			if ((i = buf_idx % line_len) > 0) printf(VT100_CURSOR_RIGHT, i);
 			if ((i = buf_idx / line_len) > 0) printf(VT100_CURSOR_DOWN, i);
-			state = CHAR;
+			state = STATE_CHAR;
 			return;
 		default:
-			state = CHAR;
+			state = STATE_CHAR;
 			return;
 		}
 	}

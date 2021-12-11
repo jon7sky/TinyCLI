@@ -17,6 +17,10 @@ void term_cmd_exe(char *buf)
 {
 	int rc;
 
+	if (*buf == 0)
+	{
+		return;
+	}
 	rc = tcli_cmd_handle(buf);
 	puts(tcli_error(rc));
 }
