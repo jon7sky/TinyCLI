@@ -19,6 +19,7 @@
 #define VT100_ERASE_EOS			"\033[0J"
 #define VT100_SAVE_CURSOR		"\0337"
 #define VT100_RESTORE_CURSOR	"\0338"
+#define VT100_ACTIVE_POS_REPORT "\033[6n"
 
 typedef enum
 {
@@ -43,6 +44,7 @@ void app_init(void)
 	puts("\nTinyCLI Demo\n");
 }
 
+#define ACCUM_SIZE	2
 #define BUF_CNT 	4
 #define BUF_SIZE	256
 static char buf[BUF_CNT][BUF_SIZE];
@@ -53,7 +55,9 @@ void app_run(void)
 	static int buf_len = 0;
 	static int buf_idx = 0;
 	static int cur_buf_idx = 0;
-	static int line_len = 25;
+	static int line_len = 80;
+	static int accum[ACCUM_SIZE];
+	static int accum_idx;
 	char *b;
 	int c;
 	int i;
@@ -65,15 +69,6 @@ void app_run(void)
 		return;
 	}
 
-#if 0
-	if (state != INIT)
-	{
-		i = buf_idx / line_len;
-		printf(VT100_CURSOR_BOL);
-		if (i) printf(VT100_CURSOR_UP, i);
-	}
-#endif
-
 	switch (state)
 	{
 	case INIT:
@@ -81,7 +76,7 @@ void app_run(void)
 		b[1] = 0;
 		buf_idx = buf_len = 1;
 		state = CHAR;
-		printf(VT100_SAVE_CURSOR ">");
+		printf(VT100_CURSOR_EOL VT100_ACTIVE_POS_REPORT VT100_CURSOR_BOL VT100_SAVE_CURSOR ">");
 		return;
 	case CHAR:
 		switch (c)
@@ -95,7 +90,7 @@ void app_run(void)
 			return;
 		case ASCII_ESC:
 			state = GOT_ESC;
-			break;
+			return;
 		case ASCII_BS:
 			if (buf_idx > 1)
 			{
@@ -114,15 +109,32 @@ void app_run(void)
 		}
 		break;
 	case GOT_ESC:
+		accum_idx = 0;
+		accum[0] = accum[1] = 0;
 		state = (c == '[' ? GOT_ESC_LB : CHAR);
-		break;
+		return;
 	case GOT_ESC_LB:
+		if (c >= '0' && c <= '9')
+		{
+			accum[accum_idx] = accum[accum_idx] * 10 + (c & 0xf);
+			return;
+		}
 		switch (c)
 		{
+		case ';':
+			if (accum_idx < ACCUM_SIZE)
+			{
+				accum_idx++;
+			}
+			return;
+		case 'R': // Cursor position report
+			line_len = accum[1];
+			state = CHAR;
+			return;
 		case 'A': // Cursor up
 		case 'B': // Cursor down
 			state = CHAR;
-			break;
+			return;
 		case 'C': // Cursor right
 		case 'D': // Cursor left
 			if (c == 'C' && buf_idx < buf_len)
@@ -140,14 +152,13 @@ void app_run(void)
 			return;
 		default:
 			state = CHAR;
-			break;
+			return;
 		}
 	}
 
+	// If we got here, the buffer contents have changed in some way.
 	b[buf_len] = 0;
-	printf(VT100_RESTORE_CURSOR "%s", b);
-	if ((buf_len % line_len) == 0) printf(" ");
-	printf(VT100_ERASE_EOS VT100_CURSOR_BOL);
+	printf(VT100_RESTORE_CURSOR "%s \010" VT100_CURSOR_BOL, b);
 	if ((i = buf_len / line_len) > 0) printf(VT100_CURSOR_UP, i);
 	// Cursor should now be sitting right at the '>' prompt.
 	// Save the position and then move it to where it's supposed to be.
