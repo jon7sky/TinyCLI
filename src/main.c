@@ -7,12 +7,22 @@ void demo(void);
 int main(int argc, char *argv[])
 {
     char buf[1000];
+    int i;
     int rc;
 
     while (1)
     {
         printf(">");
-        gets(buf);
+        fgets(buf, sizeof(buf), stdin);
+        // Remove the newline character at the end
+        for (i = 0; i < sizeof(buf); i++)
+        {
+            if (buf[i] == '\n')
+            {
+                buf[i] = 0;
+                break;
+            }
+        }
         if (strcmp(buf, "quit") == 0)
         {
             break;
@@ -39,19 +49,18 @@ void demo(void)
 
     const char *test_cmds[] =
     {
-        "make   burger   --wheat   --ketchup   --mustard   --name='Alice Jones'",
-        "m bu -w -k -n 'Bob Smith' -g",
-        "m b -w -k -n 'Bob Smith' -g",
-        "m biscuits --gravy",
+        "make   burger   --wheat   --ketchup   --mustard",
+        "make biscuits --gravy",
         "make fries",
         "make fries --light-salt",
         "make fries --extra-salt",
         "make grits --sugar",
         "deliver to Alice",
-        "d t Bob '123 Main St'",
-        "d t Charlie '666 Elm St' huh?",
+        "deliver to Bob '123 Main St'",
+        "deliver to Charlie '666 Elm St' huh?",
         "deliver to",
         "eat burger fries shake",
+        "eat",
         "turn grill on",
         "turn grill off",
         "turn grill on off",
@@ -72,12 +81,7 @@ void demo(void)
 
 int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
 {
-    printf("Making a burger");
-    if (args->name)
-    {
-        printf(" for '%s'", args->name);
-    }
-    printf("\n");
+    printf("Making a burger\n");
     printf("Bun is %s\n", args->wheat ? "wheat" : "white");
     if (args->ketchup)
     {
@@ -86,10 +90,6 @@ int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
     if (args->mustard)
     {
         printf("Add mustard\n");
-    }
-    if (args->to_go)
-    {
-        printf("Order is to-go\n");
     }
     return TCLI_OK;
 }

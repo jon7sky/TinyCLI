@@ -9,21 +9,12 @@
     "make burger [options]  (-w,--white | -h,--wheat)\n" \
     "    -k, --ketchup       Add ketchup\n" \
     "    -m, --mustard       Add Mustard\n" \
-    "    -g, --to-go         Make it to go\n" \
-    "    -n, --name=<name>   Add name\n" \
-    "\n" \
     "make fries [-l,--light-salt]\n" \
-    "\n" \
     "make biscuits [-g,--gravy]\n" \
-    "\n" \
     "make grits [-b,--butter -s,--sugar]\n" \
-    "\n" \
     "deliver to <name> [<address>]\n" \
-    "\n" \
     "eat <food>...\n" \
-    "\n" \
     "turn grill (on | off)\n" \
-    "\n" \
     "help\n" \
     ""
 
@@ -49,9 +40,7 @@ typedef struct
     bool_options_t wheat:1;
     bool_options_t ketchup:1;
     bool_options_t mustard:1;
-    bool_options_t to_go:1;
-    bool_options_t _pad_:27;
-    char *name;
+    bool_options_t _pad_:28;
 } tcli_args_make_burger_t;
 
 typedef struct

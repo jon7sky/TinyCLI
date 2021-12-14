@@ -2,10 +2,10 @@
 #include <string.h>
 #include "tcli.h"
 
-#undef DEBUG
-#define DEBUG 0
+#undef TCLI_DEBUG
+#define TCLI_DEBUG 0
 
-#if DEBUG
+#if TCLI_DEBUG
 #define DEBUG_PRINTF(...) printf(__VA_ARGS__)
 #else
 #define DEBUG_PRINTF(...)
@@ -59,11 +59,14 @@ static void tcli_tokenize(char *buf)
 
     for (f = t = buf; *f;)
     {
+        // Skip any leading spaces.
         if (*f == ' ')
         {
             f++;
             continue;
         }
+        // If we encounter a ' or a ", then use that as the terminator.
+        // Otherwise, use space or = as the terminator.
         if (*f == '\'' || *f == '\"')
         {
             for (c = *f++; *f && (*t = *f++) != c; t++);
@@ -76,7 +79,7 @@ static void tcli_tokenize(char *buf)
     }
     *t = END_OF_BUF;
 
-#if DEBUG
+#if TCLI_DEBUG
     puts("Tokenized command line:");
     for (t = buf; *t != END_OF_BUF; t = tcli_next(t))
     {

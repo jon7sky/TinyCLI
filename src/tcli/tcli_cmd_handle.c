@@ -33,8 +33,6 @@ __attribute__((weak)) int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *a
     PRINTF_ARG("wheat:               %d\n", args->wheat);
     PRINTF_ARG("ketchup:             %d\n", args->ketchup);
     PRINTF_ARG("mustard:             %d\n", args->mustard);
-    PRINTF_ARG("to_go:               %d\n", args->to_go);
-    PRINTF_ARG("name:                '%s'\n", args->name ? args->name : "NULL");
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
