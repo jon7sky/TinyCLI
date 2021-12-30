@@ -158,12 +158,16 @@ def main():
 	if debug:
 		print('CmdStringTbl: "' + cmdStringTbl + '"')
 		print('ArgStringTbl: "' + argStringTbl + '"')
-		
+	
+	warningText  = '// WARNING: This file has been automatically generated.' + EOL
+	warningText += '// Do not edit, or your changes will be lost the next time code is generated.' + EOL + EOL
+	
 	#
 	# Generate tcli_def.h
 	#
 
-	x  = '#ifndef TCLI_DEF_H' + EOL
+	x = warningText
+	x += '#ifndef TCLI_DEF_H' + EOL
 	x += '#define TCLI_DEF_H' + EOL + EOL
 	x += '#define TCLI_USE_HASH_FOR_CMDS %d' % (0 if useStringTableForCmds else 1) + EOL + EOL
 	x +=	'#include <stdint.h>' + EOL + EOL
@@ -226,7 +230,7 @@ def main():
 	# Generate tcli_def.c
 	#
 
-	x = ''
+	x = warningText
 	x += '#include "tcli.h"' + EOL
 	x += '' + EOL
 	if useStringTableForCmds:
@@ -304,7 +308,7 @@ def main():
 	# Generate tcil_cmd_handle.c
 	#
 
-	x = ''
+	x = warningText
 	x += '#include "tcli.h"' + EOL + EOL
 	x += '#define TCLI_CMD_HANDLE_DEBUG 0' + EOL + EOL
 	x += '#if TCLI_CMD_HANDLE_DEBUG' + EOL
@@ -339,7 +343,15 @@ def main():
 			if arg.type == 'pos':
 				x += '    printf("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
 			if arg.type == 'posMulti':
-				x += '    printf("%-20s "); { const char *p; for (p = args->%s; p != NULL; p = tcli_next_arg(p)) { printf(" \'%%s\'", p); } printf("\\n"); }' % (arg.cVarName+':', arg.cVarName) + EOL
+				x += '    printf("%-20s ");' % (arg.cVarName+':') + EOL
+				x += '    {' + EOL
+				x += '        const char *p;' + EOL
+				x += '        for (p = args->%s; p != NULL; p = tcli_next_arg(p))'  % (arg.cVarName) + EOL
+				x += '        {' + EOL
+				x += '            printf("\'%s\' ", p);' + EOL
+				x += '        }' + EOL
+				x += '        printf("\\n");' + EOL
+				x += '    }' + EOL
 		x += '    return TCLI_OK;' + EOL
 		x += '#else' + EOL
 		x += '    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;' + EOL

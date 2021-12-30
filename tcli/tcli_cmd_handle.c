@@ -1,3 +1,6 @@
+// WARNING: This file has been automatically generated.
+// Do not edit, or your changes will be lost the next time code is generated.
+
 #include "tcli.h"
 
 #define TCLI_CMD_HANDLE_DEBUG 0
@@ -87,7 +90,15 @@ __attribute__((weak)) int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *arg
 __attribute__((weak)) int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 {
 #if TCLI_CMD_HANDLE_DEBUG
-    printf("food:                "); { const char *p; for (p = args->food; p != NULL; p = tcli_next_arg(p)) { printf(" '%s'", p); } printf("\n"); }
+    printf("food:                ");
+    {
+        const char *p;
+        for (p = args->food; p != NULL; p = tcli_next_arg(p))
+        {
+            printf("'%s' ", p);
+        }
+        printf("\n");
+    }
     return TCLI_OK;
 #else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;

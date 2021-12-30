@@ -1,3 +1,6 @@
+// WARNING: This file has been automatically generated.
+// Do not edit, or your changes will be lost the next time code is generated.
+
 #include "tcli.h"
 
 #define HA(x) ((x) & 0x003fffff)
