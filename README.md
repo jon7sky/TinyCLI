@@ -195,7 +195,7 @@ Just CD to that directory in a shell and type `make` to build the program.
 The excutable is in the file `tcli.exe`. The program is a restaurant simulator. Type `help` for the list of valid commands.
 Entering `quit` gets you out of the program.
 
-If you're looking for some example code that can actually be run in an embedded environmet (which is what TinyCLI is designed for),
+If you're looking for some example code that can actually be run in an embedded environment (which is what TinyCLI is designed for),
 you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE develoment board. You can import this project into
 ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's virtual COM port. 
 (The ST-Link is attached to this NUCLEO board.) The example commands will let you turn each of the three LEDs on or off,
