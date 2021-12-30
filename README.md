@@ -190,7 +190,7 @@ The error codes can be found in `tcli.h`. Look for the `TCLI_ERROR_*` enum value
 
 ## Is there example code?
 
-Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. There is a makefile in the top directory.
+Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. The code is in `demo/restaurant`.
 Just CD to that directory in a shell and type `make` to build the program. 
 The excutable is in the file `tcli.exe`. The program is a restaurant simulator. Type `help` for the list of valid commands.
 Entering `quit` gets you out of the program.
