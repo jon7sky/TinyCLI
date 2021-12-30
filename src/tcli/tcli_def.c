@@ -26,7 +26,8 @@ static const tcli_ca_def_t tcli_ca_def[] =
     { .arg_def.short_char = 's', .arg_def.hash = HA(0x4b5231af), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 0 }, // sugar
 
     // deliver to
-    { .cmd_def.hash = HC(0x4b82c5b3), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  2, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 0 },
+    { .cmd_def.hash = HC(0x4b82c5b3), .cmd_def.arg_def_cnt =  1, .cmd_def.pos_cnt =  1, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 0 },
+    { .arg_def.short_char = ' ', .arg_def.hash = HA(0x74f05848), .arg_def.has_val = 1, .arg_def.mutex = 1, .arg_def.required = 0 }, // addr
 
     // eat
     { .cmd_def.hash = HC(0x6c6e2525), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  1, .cmd_def.pos_req =  1, .cmd_def.pos_multi = 1 },

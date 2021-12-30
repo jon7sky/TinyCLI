@@ -79,6 +79,8 @@ void demo(void)
     }
 }
 
+#if 1
+
 int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
 {
     printf("Making a burger\n");
@@ -128,9 +130,9 @@ int tcli_cmd_handle_make_grits(tcli_args_make_grits_t *args)
 int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {
     printf("Delivering order to '%s'", args->name);
-    if (args->address)
+    if (args->addr)
     {
-        printf(" at '%s'", args->address);
+        printf(" at '%s'", args->addr);
     }
     printf("\n");
     return TCLI_OK;
@@ -158,3 +160,5 @@ int tcli_cmd_handle_help(tcli_args_help_t *args)
     printf(TCLI_USAGE_TEXT);
     return TCLI_OK;
 }
+
+#endif

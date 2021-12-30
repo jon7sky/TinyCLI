@@ -6,13 +6,13 @@
 #include <stdint.h>
 
 #define TCLI_USAGE_TEXT \
-    "make burger [options]  (-w,--white | -h,--wheat)\n" \
+    "make burger [options] (-w,--white | -h,--wheat)\n" \
     "    -k, --ketchup       Add ketchup\n" \
     "    -m, --mustard       Add Mustard\n" \
     "make fries [-l,--light-salt]\n" \
     "make biscuits [-g,--gravy]\n" \
     "make grits [-b,--butter -s,--sugar]\n" \
-    "deliver to <name> [<address>]\n" \
+    "deliver to <name> [--addr=<address>]\n" \
     "eat <food>...\n" \
     "turn grill (on | off)\n" \
     "help\n" \
@@ -65,8 +65,8 @@ typedef struct
 typedef struct
 {
     bool_options_t _pad_:32;
+    char *addr;
     char *name;
-    char *address;
 } tcli_args_deliver_to_t;
 
 typedef struct

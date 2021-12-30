@@ -158,6 +158,10 @@ def main():
 	if debug:
 		print('CmdStringTbl: "' + cmdStringTbl + '"')
 		print('ArgStringTbl: "' + argStringTbl + '"')
+		
+	#
+	# Generate tcli_def.h
+	#
 
 	x  = '#ifndef TCLI_DEF_H' + EOL
 	x += '#define TCLI_DEF_H' + EOL + EOL
@@ -218,6 +222,9 @@ def main():
 	with open(os.path.join('tcli_def.h'), 'w') as f:
 		f.write(x)
 
+	#
+	# Generate tcli_def.c
+	#
 
 	x = ''
 	x += '#include "tcli.h"' + EOL
@@ -293,12 +300,16 @@ def main():
 	with open(os.path.join('tcli_def.c'), 'w') as f:
 		f.write(x)
 
+	#
+	# Generate tcil_cmd_handle.c
+	#
 
 	x = ''
 	x += '#include "tcli.h"' + EOL + EOL
-	x += '#define PRINTF_ARG(...)' + EOL
-	x += '// #include <stdio.h>' + EOL
-	x += '// #define PRINTF_ARG(...) printf(__VA_ARGS__)' + EOL + EOL
+	x += '#define TCLI_CMD_HANDLE_DEBUG 0' + EOL + EOL
+	x += '#if TCLI_CMD_HANDLE_DEBUG' + EOL
+	x += '#include <stdio.h>' + EOL
+	x += '#endif' + EOL + EOL
 	x += 'static tcli_args_t args;' + EOL + EOL
 	x += 'int tcli_cmd_handle(char *buf)' + EOL
 	x += '{' + EOL
@@ -317,16 +328,22 @@ def main():
 		x += '__attribute__((weak)) int tcli_cmd_handle%s(tcli_args%s_t *args)' % (cmd.structName, cmd.structName)
 		x += EOL
 		x += '{' + EOL
+		x += '#if TCLI_CMD_HANDLE_DEBUG' + EOL
 		for arg in cmd.args:
 			if arg.type == 'optBool':
-				x += '    PRINTF_ARG("%-20s %%d\\n", args->%s);' % (arg.cVarName+':', arg.cVarName) + EOL
+				x += '    printf("%-20s %%d\\n", args->%s);' % (arg.cVarName+':', arg.cVarName) + EOL
 		for arg in cmd.args:
 			if arg.type == 'optVal':
-				x += '    PRINTF_ARG("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
+				x += '    printf("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
 		for arg in cmd.args:
-			if arg.type.startswith('pos'):
-				x += '    PRINTF_ARG("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
+			if arg.type == 'pos':
+				x += '    printf("%-20s \'%%s\'\\n", args->%s ? args->%s : "NULL");' % (arg.cVarName+':', arg.cVarName, arg.cVarName) + EOL
+			if arg.type == 'posMulti':
+				x += '    printf("%-20s "); { const char *p; for (p = args->%s; p != NULL; p = tcli_next_arg(p)) { printf(" \'%%s\'", p); } printf("\\n"); }' % (arg.cVarName+':', arg.cVarName) + EOL
+		x += '    return TCLI_OK;' + EOL
+		x += '#else' + EOL
 		x += '    return TCLI_ERROR_COMMAND_NOT_SUPPORTED;' + EOL
+		x += '#endif' + EOL
 		x += '}' + EOL + EOL
 	if debug:
 		print(x)

@@ -1,8 +1,10 @@
 #include "tcli.h"
 
-#define PRINTF_ARG(...)
-// #include <stdio.h>
-// #define PRINTF_ARG(...) printf(__VA_ARGS__)
+#define TCLI_CMD_HANDLE_DEBUG 0
+
+#if TCLI_CMD_HANDLE_DEBUG
+#include <stdio.h>
+#endif
 
 static tcli_args_t args;
 
@@ -29,54 +31,86 @@ int tcli_cmd_handle(char *buf)
 
 __attribute__((weak)) int tcli_cmd_handle_make_burger(tcli_args_make_burger_t *args)
 {
-    PRINTF_ARG("white:               %d\n", args->white);
-    PRINTF_ARG("wheat:               %d\n", args->wheat);
-    PRINTF_ARG("ketchup:             %d\n", args->ketchup);
-    PRINTF_ARG("mustard:             %d\n", args->mustard);
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("white:               %d\n", args->white);
+    printf("wheat:               %d\n", args->wheat);
+    printf("ketchup:             %d\n", args->ketchup);
+    printf("mustard:             %d\n", args->mustard);
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_fries(tcli_args_make_fries_t *args)
 {
-    PRINTF_ARG("light_salt:          %d\n", args->light_salt);
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("light_salt:          %d\n", args->light_salt);
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_biscuits(tcli_args_make_biscuits_t *args)
 {
-    PRINTF_ARG("gravy:               %d\n", args->gravy);
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("gravy:               %d\n", args->gravy);
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_make_grits(tcli_args_make_grits_t *args)
 {
-    PRINTF_ARG("butter:              %d\n", args->butter);
-    PRINTF_ARG("sugar:               %d\n", args->sugar);
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("butter:              %d\n", args->butter);
+    printf("sugar:               %d\n", args->sugar);
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_deliver_to(tcli_args_deliver_to_t *args)
 {
-    PRINTF_ARG("name:                '%s'\n", args->name ? args->name : "NULL");
-    PRINTF_ARG("address:             '%s'\n", args->address ? args->address : "NULL");
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("addr:                '%s'\n", args->addr ? args->addr : "NULL");
+    printf("name:                '%s'\n", args->name ? args->name : "NULL");
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_eat(tcli_args_eat_t *args)
 {
-    PRINTF_ARG("food:                '%s'\n", args->food ? args->food : "NULL");
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("food:                "); { const char *p; for (p = args->food; p != NULL; p = tcli_next_arg(p)) { printf(" '%s'", p); } printf("\n"); }
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_turn_grill(tcli_args_turn_grill_t *args)
 {
-    PRINTF_ARG("on:                  %d\n", args->on);
-    PRINTF_ARG("off:                 %d\n", args->off);
+#if TCLI_CMD_HANDLE_DEBUG
+    printf("on:                  %d\n", args->on);
+    printf("off:                 %d\n", args->off);
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
 __attribute__((weak)) int tcli_cmd_handle_help(tcli_args_help_t *args)
 {
+#if TCLI_CMD_HANDLE_DEBUG
+    return TCLI_OK;
+#else
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
+#endif
 }
 
