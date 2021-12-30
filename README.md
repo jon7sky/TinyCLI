@@ -167,6 +167,7 @@ which are defined as weak functions. Just implement your own functions to overri
 The easiest way to do that is to copy/paste the functions from `tcli_command_handle.c` into your own source file,
 remove the weak attirbute, and replace the function body with your own logic.
 Each function contains example code for how to access each of the arguments.
+It is expected that each of your command handlers returns 0 for success or non-zero for errors.
 
 A handy function called `tcli_next_arg()` can be used to loop through a positional argument that can take more than
 one value (specified with `...` in the definition file). See the example code that's generated for its usage.
@@ -188,14 +189,15 @@ rc = tcli_cmd_handle(buf);
 Return code `rc` will be 0 if success. If non-zero, an error occurred.
 The error codes can be found in `tcli.h`. Look for the `TCLI_ERROR_*` enum values.
 
-## Is there example code?
+## Is There Example Code?
 
-Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. There is a makefile in the top directory.
+Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. The code is in `demo/restaurant`.
 Just CD to that directory in a shell and type `make` to build the program. 
 The excutable is in the file `tcli.exe`. The program is a restaurant simulator. Type `help` for the list of valid commands.
 Entering `quit` gets you out of the program.
 
-If you're looking for some example code that can actually be run in an embedded environmet (which is what TinyCLI is designed for),
+If you're looking for some example code that can actually be run in an embedded environment (which is what TinyCLI is designed for),
 you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE develoment board. You can import this project into
 ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's virtual COM port. 
-(The ST-Link is attached to this NUCLEO board.)
+(The ST-Link is attached to this NUCLEO board.) The example commands will let you turn each of the three LEDs on or off,
+or wait for the button to be pressed.
