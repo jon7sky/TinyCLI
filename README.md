@@ -149,3 +149,53 @@ But, this also means that it's possible to enter some random characters that res
 * The command buffer is destroyed when parsed. The tokenizer will write null terminators after each word on the command line.
 * While `=` must be used when defining commands, the parser will not require it. For example `pour drink --type=beer` and `pour drink --type beer` both work.
 * It is not possible to combine multiple short options, for example, you must use `make burger -m -k` and not `make burger -mk`.
+
+## So How Do I Use This?
+
+The stuff you want for your project is all in the `src/tcli` directory. You're going to need to install Python version 3,
+which is what the code generator script uses.
+### Edit the `tcli_def.txt` command definition file
+Using the syntax described above, edit this file to describe all your commands and their arguments.
+### Generate the code
+From a shell, `cd` to the `tcli` directory and run the command `python3 tcli_gen.py` to generate the C source code
+### Add the tcli C/H files to your project
+Copy all the files in the `tcli` directory into your project, if you haven't done that already.
+### Implement the command handler functions
+Each function you defined needs a command handler with the name `tcli_command_handle_<your_command>`.
+The `tcli_command_handle.c` file that was generated contains do-nothing handlers for each of your commands,
+which are defined as weak functions. Just implement your own functions to override these weak ones.
+The easiest way to do that is to copy/paste the functions from `tcli_command_handle.c` into your own source file,
+remove the weak attirbute, and replace the function body with your own logic.
+Each function contains example code for how to access each of the arguments.
+
+A handy function called `tcli_next_arg()` can be used to loop through a positional argument that can take more than
+one value (specified with `...` in the definition file). See the example code that's generated for its usage.
+
+Also, a handy macro `TCLI_USAGE_TEXT` is defined, which is a text string that describes the usage.
+This can be used for the implementation of a `help` command.
+
+### Call the command handler
+
+To run the command handler, construct the command in a `char[]` buffer and call the command handler function like this:
+```
+char cmd_buf[100];
+int rc;
+
+strcpy(cmd_buf, "my command --option");
+rc = tcli_cmd_handle(buf);
+```
+
+Return code `rc` will be 0 if success. If non-zero, an error occurred.
+The error codes can be found in `tcli.h`. Look for the `TCLI_ERROR_*` enum values.
+
+## Is there example code?
+
+Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. There is a makefile in the top directory.
+Just CD to that directory in a shell and type `make` to build the program. 
+The excutable is in the file `tcli.exe`. The program is a restaurant simulator. Type `help` for the list of valid commands.
+Entering `quit` gets you out of the program.
+
+If you're looking for some example code that can actually be run in an embedded environmet (which is what TinyCLI is designed for),
+you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE develoment board. You can import this project into
+ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's virtual COM port. 
+(The ST-Link is attached to this NUCLEO board.)
