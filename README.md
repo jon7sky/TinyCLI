@@ -152,7 +152,7 @@ But, this also means that it's possible to enter some random characters that res
 
 ## So How Do I Use This?
 
-The stuff you want for your project is all in the `src/tcli` directory. You're going to need to install Python version 3,
+The stuff you want for your project is all in the `tcli` directory. You're going to need to install Python version 3,
 which is what the code generator script uses.
 ### Edit the `tcli_def.txt` command definition file
 Using the syntax described above, edit this file to describe all your commands and their arguments.
