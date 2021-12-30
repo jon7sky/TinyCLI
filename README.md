@@ -167,6 +167,7 @@ which are defined as weak functions. Just implement your own functions to overri
 The easiest way to do that is to copy/paste the functions from `tcli_command_handle.c` into your own source file,
 remove the weak attirbute, and replace the function body with your own logic.
 Each function contains example code for how to access each of the arguments.
+It is expected that each of your command handlers returns 0 or non-zero for errors.
 
 A handy function called `tcli_next_arg()` can be used to loop through a positional argument that can take more than
 one value (specified with `...` in the definition file). See the example code that's generated for its usage.
