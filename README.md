@@ -161,10 +161,10 @@ From a shell, `cd` to the `tcli` directory and run the command `python3 tcli_gen
 ### Add the tcli C/H files to your project
 Copy all the files in the `tcli` directory into your project, if you haven't done that already.
 ### Implement the command handler functions
-Each function you defined needs a command handler with the name `tcli_command_handle_<your_command>`.
-The `tcli_command_handle.c` file that was generated contains do-nothing handlers for each of your commands,
+Each function you defined needs a command handler with the name `tcli_cmd_handle_<your_command>`.
+The `tcli_cmd_handle.c` file that was generated contains do-nothing handlers for each of your commands,
 which are defined as weak functions. Just implement your own functions to override these weak ones.
-The easiest way to do that is to copy/paste the functions from `tcli_command_handle.c` into your own source file,
+The easiest way to do that is to copy/paste the functions from `tcli_cmd_handle.c` into your own source file,
 remove the weak attirbute, and replace the function body with your own logic.
 Each function contains example code for how to access each of the arguments.
 It is expected that each of your command handlers returns 0 for success or non-zero for errors.
