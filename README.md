@@ -134,9 +134,9 @@ typedef struct
 ## The Command Handler
 
 A command entered by the user must be stored in a `char[]` buffer. This bufer is passed to `tcli_cmd_handle()` in `tcli_cmd_handle.c`.
-This function will parse the command line, fill in an argument structure, and call a function named `tcli_command_handle_<name_of_your_command>()`.
-For example, the `pour drink` command will fill in a `tcli_args_pour_drink_t` argument structure and pass it to a `tcli_command_handle_pour_drink()` function.
-Default implementations for all valid commands are defined in `tcli_command_handle.c` with the `__weak__` attribute so they can be easily overridden.
+This function will parse the command line, fill in an argument structure, and call a function named `tcli_cmd_handle_<name_of_your_command>()`.
+For example, the `pour drink` command will fill in a `tcli_args_pour_drink_t` argument structure and pass it to a `tcli_cmd_handle_pour_drink()` function.
+Default implementations for all valid commands are defined in `tcli_cmd_handle.c` with the `__weak__` attribute so they can be easily overridden.
 It is expected that the user defines the real implementation of each of those functions in another file.
 
 ## Implementation Shortcuts
