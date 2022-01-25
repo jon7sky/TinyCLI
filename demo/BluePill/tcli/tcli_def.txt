@@ -1,0 +1,3 @@
+led (red | green | blue | all) (on | off)
+button wait
+help

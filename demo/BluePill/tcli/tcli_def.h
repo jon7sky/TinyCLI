@@ -1,0 +1,64 @@
+#ifndef TCLI_DEF_H
+#define TCLI_DEF_H
+
+#define TCLI_USE_HASH_FOR_CMDS 1
+
+#include <stdint.h>
+
+#define TCLI_USAGE_TEXT \
+    "led (red | green | blue | all) (on | off)\n" \
+    "button wait\n" \
+    "help\n" \
+    ""
+
+enum
+{
+    CMD_ID_NONE = 0,
+    CMD_ID_led,
+    CMD_ID_button_wait,
+    CMD_ID_help,
+    CMD_ID_CNT
+};
+
+typedef uint32_t bool_options_t;
+
+typedef struct
+{
+    bool_options_t red:1;
+    bool_options_t green:1;
+    bool_options_t blue:1;
+    bool_options_t all:1;
+    bool_options_t on:1;
+    bool_options_t off:1;
+    bool_options_t _pad_:26;
+} tcli_args_led_t;
+
+typedef struct
+{
+    bool_options_t _pad_:32;
+} tcli_args_button_wait_t;
+
+typedef struct
+{
+    bool_options_t _pad_:32;
+} tcli_args_help_t;
+
+typedef struct
+{
+    bool_options_t bools;
+    char *vals[0];
+} tcli_args_generic_t;
+
+typedef union
+{
+    tcli_args_generic_t generic;
+    tcli_args_led_t led;
+    tcli_args_button_wait_t button_wait;
+    tcli_args_help_t help;
+} tcli_args_t;
+
+int tcli_cmd_handle_led(tcli_args_led_t *args);
+int tcli_cmd_handle_button_wait(tcli_args_button_wait_t *args);
+int tcli_cmd_handle_help(tcli_args_help_t *args);
+
+#endif

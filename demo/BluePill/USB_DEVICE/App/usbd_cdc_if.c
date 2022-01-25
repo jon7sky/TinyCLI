@@ -265,7 +265,8 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 
   // Echo received characters back
-  CDC_Transmit_FS(Buf, *Len);
+  //CDC_Transmit_FS(Buf, *Len);
+  term_add_buf(Buf, *Len);
 
   return (USBD_OK);
   /* USER CODE END 6 */
