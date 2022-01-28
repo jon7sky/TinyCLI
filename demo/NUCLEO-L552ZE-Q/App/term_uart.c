@@ -3,12 +3,41 @@
 
 UART_HandleTypeDef hlpuart1;
 
-int getchar(void)
+static uint8_t rxBuf[0x10];
+static uint8_t rxPutIdx = 0;
+static uint8_t rxGetIdx = 0;
+
+void term_hw_init(void)
 {
-    HAL_StatusTypeDef hstatus;
-    uint8_t b;
-    hstatus = HAL_UART_Receive(&hlpuart1, &b, 1, 0);
-    return (hstatus != HAL_OK ? EOF : b);
+	HAL_UART_Receive_IT(&hlpuart1, &rxBuf[rxPutIdx], 1);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if (huart == &hlpuart1)
+	{
+		//printf("got one! get = %d, put = %d\n", rxGetIdx, rxPutIdx);
+		rxPutIdx = (rxPutIdx + 1) % sizeof(rxBuf);
+		HAL_UART_Receive_IT(&hlpuart1, &rxBuf[rxPutIdx], 1);
+	}
+}
+
+int _read(int file, char *ptr, int len)
+{
+	int lenRx = 0;
+
+	while (len)
+	{
+		if (rxGetIdx == rxPutIdx)
+		{
+			break;
+		}
+		*ptr++ = rxBuf[rxGetIdx];
+		rxGetIdx = (rxGetIdx + 1) % sizeof(rxBuf);
+		lenRx++;
+	}
+
+	return lenRx ? lenRx : -1;
 }
 
 int _write(int file, char *ptr, int len) {

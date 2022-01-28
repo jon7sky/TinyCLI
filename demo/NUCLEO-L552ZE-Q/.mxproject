@@ -9,18 +9,18 @@ CDefines=USE_FULL_LL_DRIVER;USE_HAL_DRIVER;STM32L552xx;USE_FULL_LL_DRIVER;USE_HA
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=4
-HeaderFiles#0=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32l5xx_it.h
-HeaderFiles#1=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32_assert.h
-HeaderFiles#2=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32l5xx_hal_conf.h
-HeaderFiles#3=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/main.h
+HeaderFiles#0=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32l5xx_it.h
+HeaderFiles#1=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32_assert.h
+HeaderFiles#2=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/stm32l5xx_hal_conf.h
+HeaderFiles#3=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc
+HeaderPath#0=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/stm32l5xx_it.c
-SourceFiles#1=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/stm32l5xx_hal_msp.c
-SourceFiles#2=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/main.c
+SourceFiles#0=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/stm32l5xx_it.c
+SourceFiles#1=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/stm32l5xx_hal_msp.c
+SourceFiles#2=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=C:/Users/JohnS/eclipse-workspace/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src
+SourcePath#0=E:/Users/john/Documents/GitHub/TinyCLI/demo/NUCLEO-L552ZE-Q/Core/Src
 SourceFiles=;
 

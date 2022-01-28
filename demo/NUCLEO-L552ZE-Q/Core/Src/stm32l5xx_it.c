@@ -55,7 +55,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern UART_HandleTypeDef hlpuart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -197,6 +197,20 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32l5xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles LPUART1 global interrupt / LPUART1 wake-up interrupt through EXTI line 31.
+  */
+void LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN LPUART1_IRQn 0 */
+
+  /* USER CODE END LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&hlpuart1);
+  /* USER CODE BEGIN LPUART1_IRQn 1 */
+
+  /* USER CODE END LPUART1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
