@@ -198,8 +198,13 @@ Entering `quit` gets you out of the program.
 
 If you're looking for some example code that can actually be run in an embedded environment (which is what TinyCLI is designed for),
 you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE develoment board. You can import this project into
-ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's virtual COM port. 
-(The ST-Link is attached to this NUCLEO board.) The example commands will let you turn each of the three LEDs on or off,
+ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's built-in virtual COM port,
+which communicates with the STM32 through one of the UARTs. 
+(The ST-Link is attached to this NUCLEO board.) 
+You can use TeraTerm or your favorite VT100 emulator to talk to the board.
+The example commands will let you turn each of the three LEDs on or off,
 or wait for the button to be pressed.
 
-And there's also a similar demo that runs on everybody's favorite STM32 board, the Blue Pill. Check out `demo/BluePill`. It also uses the STM32CubeIDE tool to build and load the firmware.
+And there's also a similar demo that runs on everybody's favorite STM32 board, the Blue Pill. Check out `demo/BluePill`. 
+It also uses the STM32CubeIDE tool to build and load the firmware. The communication is done through the USB port. 
+The Blue Pill initializes the USB port to be a virtual COM port.
