@@ -16,7 +16,7 @@ int tcli_cmd_handle(char *buf)
     switch (rc)
     {
     case CMD_ID_led:                          return tcli_cmd_handle_led(&args.led);
-    case CMD_ID_button_wait:                  return tcli_cmd_handle_button_wait(&args.button_wait);
+    case CMD_ID_bambi:                        return tcli_cmd_handle_bambi(&args.bambi);
     case CMD_ID_help:                         return tcli_cmd_handle_help(&args.help);
     default:                                  return TCLI_INTERNAL_ERROR;
     }
@@ -29,7 +29,7 @@ __attribute__((weak)) int tcli_cmd_handle_led(tcli_args_led_t *args)
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }
 
-__attribute__((weak)) int tcli_cmd_handle_button_wait(tcli_args_button_wait_t *args)
+__attribute__((weak)) int tcli_cmd_handle_bambi(tcli_args_bambi_t *args)
 {
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;
 }

@@ -10,8 +10,8 @@ static const tcli_ca_def_t tcli_ca_def[] =
     { .arg_def.short_char = ' ', .arg_def.hash = HA(0x61342fd0), .arg_def.has_val = 0, .arg_def.mutex = 1, .arg_def.required = 1 }, // on
     { .arg_def.short_char = ' ', .arg_def.hash = HA(0xab3a8a0a), .arg_def.has_val = 0, .arg_def.mutex = 0, .arg_def.required = 1 }, // off
 
-    // button wait
-    { .cmd_def.hash = HC(0xbfcf271c), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
+    // bambi
+    { .cmd_def.hash = HC(0x32ff609e), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },
 
     // help
     { .cmd_def.hash = HC(0x3871a3fa), .cmd_def.arg_def_cnt =  0, .cmd_def.pos_cnt =  0, .cmd_def.pos_req =  0, .cmd_def.pos_multi = 0 },

@@ -3,6 +3,8 @@
 #include "main.h"
 #include "tcli.h"
 
+extern const unsigned char bambi[];
+
 void app_init(void)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -33,11 +35,22 @@ int tcli_cmd_handle_led(tcli_args_led_t *args)
 	return TCLI_OK;
 }
 
-int tcli_cmd_handle_button_wait(tcli_args_button_wait_t *args)
+
+int tcli_cmd_handle_bambi(tcli_args_bambi_t *args)
 {
-	puts("What button?");
-	// while (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin) == GPIO_PIN_RESET);
-	// puts("Button pressed!");
+    const unsigned char *p;
+    uint32_t new_tick = 0;
+    uint32_t last_tick = 0;
+
+    for (p = &bambi[0]; *p; p++)
+    {
+        putchar(*p);
+        while ((new_tick = HAL_GetTick()) == last_tick);
+        last_tick = new_tick;
+    }
+
+    // Reset scrolling
+    printf("\033[r");
 	return TCLI_OK;
 }
 

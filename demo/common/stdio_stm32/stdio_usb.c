@@ -33,7 +33,6 @@ int _read(int file, char *ptr, int len)
         }
         *ptr++ = rx_buf[rx_get_idx];
         rx_get_idx = (rx_get_idx + 1) % sizeof(rx_buf);
-        len_rx++;
     }
 
     return len_rx ? len_rx : -1;
