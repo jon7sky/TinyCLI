@@ -19,12 +19,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_device.h"
-#include "term.h"
-#include "stdio_usb.h"
-#include "app.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "term.h"
+#include "stdio_usb.h"
+#include "app.h"
 
 /* USER CODE END Includes */
 
