@@ -191,10 +191,16 @@ The error codes can be found in `tcli.h`. Look for the `TCLI_ERROR_*` enum value
 
 ## Is There Example Code?
 
-Yes! An example can be run right on your computer. You need to have a C compiler installed, like GCC. The code is in `demo/restaurant`.
+Yes! 
+
+### On A Computer
+
+An example can be run right on your computer. You need to have a C compiler installed, like GCC. The code is in `demo/restaurant`.
 Just CD to that directory in a shell and type `make` to build the program. 
 The excutable is in the file `tcli.exe`. The program is a restaurant simulator. Type `help` for the list of valid commands.
 Entering `quit` gets you out of the program.
+
+### STM32 Nucleo Board
 
 If you're looking for some example code that can actually be run in an embedded environment (which is what TinyCLI is designed for),
 you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE develoment board. You can import this project into
@@ -204,6 +210,8 @@ which communicates with the STM32 through one of the UARTs.
 You can use TeraTerm or your favorite VT100 emulator to talk to the board.
 The example commands will let you turn each of the three LEDs on or off,
 or wait for the button to be pressed.
+
+### STM32 Blue Pill
 
 And there's also a similar demo that runs on everybody's favorite STM32 board, the Blue Pill. Check out `demo/BluePill`. 
 It also uses the STM32CubeIDE tool to build and load the firmware. The communication is done through the USB port. 
