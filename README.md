@@ -201,3 +201,5 @@ you can find some in `demo/NUCLEO-L552ZE-Q`. It runs on an ST NUCLEO L552ZE deve
 ST's STM32CubeIDE tool to build and load the firmware. The input/output goes through the ST-Link's virtual COM port. 
 (The ST-Link is attached to this NUCLEO board.) The example commands will let you turn each of the three LEDs on or off,
 or wait for the button to be pressed.
+
+And there's also a similar demo that runs on everybody's favorite STM32 board, the Blue Pill. Check out `demo/BluePill`. It also uses the STM32CubeIDE tool to build and load the firmware.
