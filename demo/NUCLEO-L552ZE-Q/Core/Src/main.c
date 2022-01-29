@@ -22,8 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "term.h"
 #include "app.h"
+#include "stdio_uart.h"
+#include "term.h"
 
 /* USER CODE END Includes */
 
@@ -106,6 +107,7 @@ int main(void)
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
 
+  stdio_uart_init(&hlpuart1);
   term_init();
   app_init();
 

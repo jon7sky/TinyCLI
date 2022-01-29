@@ -35,7 +35,6 @@ static char b[BUF_SIZE] = {0, };
 
 void term_init(void)
 {
-	term_hw_init();
 }
 
 void term_run(void)
