@@ -29,4 +29,16 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>stdio_stm32</name>
+			<type>2</type>
+			<location>C:/Users/JohnS/Documents/git/TinyCLI/demo/common/stdio_stm32</location>
+		</link>
+		<link>
+			<name>term</name>
+			<type>2</type>
+			<location>C:/Users/JohnS/Documents/git/TinyCLI/demo/common/term</location>
+		</link>
+	</linkedResources>
 </projectDescription>

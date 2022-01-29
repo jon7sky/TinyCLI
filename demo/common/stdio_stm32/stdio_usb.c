@@ -2,27 +2,33 @@
 #include "main.h"
 #include "usbd_def.h"
 
-uint8_t input_buf[256];
-int put_idx = 0;
-int get_idx = 0;
+uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+
+static uint8_t rx_buf[0x100];
+static int rx_put_idx = 0;
+static int rx_get_idx = 0;
+
+void stdio_usb_init(void)
+{
+}
 
 void term_add_buf(uint8_t *buf, uint32_t len)
 {
     while (len)
     {
-        input_buf[put_idx] = *buf++;
+        rx_buf[rx_put_idx] = *buf++;
         len--;
-        put_idx = (put_idx + 1) % sizeof(input_buf);
+        rx_put_idx = (rx_put_idx + 1) % sizeof(rx_buf);
     }
 }
 
 int getchar(void)
 {
-    if (get_idx != put_idx)
+    if (rx_get_idx != rx_put_idx)
     {
         uint8_t b;
-        b = input_buf[get_idx];
-        get_idx = (get_idx + 1) % sizeof(input_buf);
+        b = rx_buf[rx_get_idx];
+        rx_get_idx = (rx_get_idx + 1) % sizeof(rx_buf);
         return b;
     }
     return EOF;
