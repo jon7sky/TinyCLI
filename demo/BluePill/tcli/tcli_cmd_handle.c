@@ -24,10 +24,6 @@ int tcli_cmd_handle(char *buf)
 
 __attribute__((weak)) int tcli_cmd_handle_led(tcli_args_led_t *args)
 {
-    PRINTF_ARG("red:                 %d\n", args->red);
-    PRINTF_ARG("green:               %d\n", args->green);
-    PRINTF_ARG("blue:                %d\n", args->blue);
-    PRINTF_ARG("all:                 %d\n", args->all);
     PRINTF_ARG("on:                  %d\n", args->on);
     PRINTF_ARG("off:                 %d\n", args->off);
     return TCLI_ERROR_COMMAND_NOT_SUPPORTED;

@@ -9,6 +9,6 @@
 #define STDIO_USB_H_
 
 void stdio_usb_init(void);
-void term_add_buf(uint8_t *buf, uint32_t len);
+void stdio_put_rx_buf(uint8_t *buf, uint32_t len);
 
 #endif /* STDIO_USB_H_ */

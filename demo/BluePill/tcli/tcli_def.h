@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #define TCLI_USAGE_TEXT \
-    "led (red | green | blue | all) (on | off)\n" \
+    "led (on | off)\n" \
     "button wait\n" \
     "help\n" \
     ""
@@ -24,13 +24,9 @@ typedef uint32_t bool_options_t;
 
 typedef struct
 {
-    bool_options_t red:1;
-    bool_options_t green:1;
-    bool_options_t blue:1;
-    bool_options_t all:1;
     bool_options_t on:1;
     bool_options_t off:1;
-    bool_options_t _pad_:26;
+    bool_options_t _pad_:30;
 } tcli_args_led_t;
 
 typedef struct

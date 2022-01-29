@@ -20,6 +20,8 @@
 #include "main.h"
 #include "usb_device.h"
 #include "term.h"
+#include "stdio_usb.h"
+#include "app.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -89,8 +91,10 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+  stdio_usb_init();
   term_init();
   app_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

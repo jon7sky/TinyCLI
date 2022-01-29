@@ -29,10 +29,7 @@ void term_cmd_exe(char *buf)
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
 {
-	if (args->red || args->green || args->blue || args->all)
-	{
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, (args->on ? 0 : 1));
-	}
+    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, (args->on ? 0 : 1));
 	return TCLI_OK;
 }
 

@@ -25,20 +25,20 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 int _read(int file, char *ptr, int len)
 {
-	int len_rx = 0;
+    int len_rx;
 
-	while (len)
-	{
-		if (rx_get_idx == rx_put_idx)
-		{
-			break;
-		}
-		*ptr++ = rx_buf[rx_get_idx];
-		rx_get_idx = (rx_get_idx + 1) % sizeof(rx_buf);
-		len_rx++;
-	}
+    for (len_rx = 0; len_rx < len; len_rx++)
+    {
+        if (rx_get_idx == rx_put_idx)
+        {
+            break;
+        }
+        *ptr++ = rx_buf[rx_get_idx];
+        rx_get_idx = (rx_get_idx + 1) % sizeof(rx_buf);
+        len_rx++;
+    }
 
-	return len_rx ? len_rx : -1;
+    return len_rx ? len_rx : -1;
 }
 
 int _write(int file, char *ptr, int len) {
