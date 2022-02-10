@@ -15,7 +15,7 @@
 
 typedef enum
 {
-    TTY_MODE_CHAR,
+    TTY_MODE_RAW,
     TTY_MODE_KEY,
     TTY_MODE_LINE
 } tty_mode_t;
