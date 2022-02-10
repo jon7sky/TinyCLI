@@ -40,5 +40,10 @@
 			<type>2</type>
 			<location>C:/Users/JohnS/Documents/git/TinyCLI/demo/common/term</location>
 		</link>
+		<link>
+			<name>tty</name>
+			<type>2</type>
+			<location>C:/Users/JohnS/Documents/git/TinyCLI/demo/common/tty</location>
+		</link>
 	</linkedResources>
 </projectDescription>

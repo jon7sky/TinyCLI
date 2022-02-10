@@ -36,6 +36,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/term}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/stdio_stm32}&quot;"/>
 									<listOptionValue builtIn="false" value="../App"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/tty}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.674873331" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
@@ -61,6 +62,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/term}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/stdio_stm32}&quot;"/>
 									<listOptionValue builtIn="false" value="../App"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/tty}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1835067513" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -87,14 +89,13 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="stdio_uart.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="stdio_stm32"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="App"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tcli"/>
-						<entry excluding="term_vt100.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="term"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tcli"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tty"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -132,6 +133,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/term}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/stdio_stm32}&quot;"/>
 									<listOptionValue builtIn="false" value="../App"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/tty}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.834831063" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
@@ -156,6 +158,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/term}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/stdio_stm32}&quot;"/>
 									<listOptionValue builtIn="false" value="../App"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\JohnS\Documents\git\TinyCLI\demo\common\tty&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/git/TinyCLI/demo/common/tty}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1036368561" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
