@@ -23,8 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "app.h"
-//#include "tty_hw_uart.h"
-// #include "term.h"
+#include "../../common/tty/tty_hw_uart.h"
 
 /* USER CODE END Includes */
 
