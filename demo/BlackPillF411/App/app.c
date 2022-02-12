@@ -11,30 +11,25 @@ void app_init(void)
 
 void app_run(void)
 {
-    uint8_t buf[100];
+    int rc;
+    char buf[128];
+    static int need_prompt = 1;
+
+    if (need_prompt)
+    {
+        putchar('>');
+        need_prompt = 0;
+    }
 
     if (fgets((char *)&buf[0], sizeof(buf), stdin) == NULL)
     {
         return;
     }
-    printf("Read this: '%s'\n", &buf[0]);
-}
 
-#if 0
-void term_cmd_exe(char *buf)
-{
-	int rc;
-	static char tcli_buf[256];
-
-	if (*buf == 0)
-	{
-		return;
-	}
-	strncpy(tcli_buf, buf, sizeof(tcli_buf));
-	rc = tcli_cmd_handle(tcli_buf);
-	puts(tcli_error(rc));
+    rc = tcli_cmd_handle(buf);
+    puts(tcli_error(rc));
+    need_prompt = 1;
 }
-#endif
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
 {
