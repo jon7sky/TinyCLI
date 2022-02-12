@@ -19,6 +19,7 @@ void app_run(void)
         putchar('>');
         print_prompt = 0;
     }
+
     if (fgets((char *)&buf[0], sizeof(buf), stdin) == NULL)
     {
         return;
@@ -29,6 +30,7 @@ void app_run(void)
         rc = tcli_cmd_handle(buf);
         puts(tcli_error(rc));
     }
+
     print_prompt = 1;
 }
 

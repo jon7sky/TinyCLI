@@ -23,8 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "term.h"
-#include "stdio_usb.h"
 #include "app.h"
 
 /* USER CODE END Includes */
@@ -92,8 +90,6 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
-  stdio_usb_init();
-  term_init();
   app_init();
 
   /* USER CODE END 2 */
@@ -105,7 +101,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    term_run();
     app_run();
   }
   /* USER CODE END 3 */
