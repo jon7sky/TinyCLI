@@ -127,14 +127,14 @@ void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
             if (buf_idx > 0)
             {
                 buf_idx--;
-                tty_tx("\010 \010", 3);
+                tty_tx((uint8_t *)"\010 \010", 3);
             }
             break;
         case ASCII_CR:
             rx_buf[buf_idx++] = 0;
             rx_put_idx = buf_idx;
             buf_idx = 0;
-            tty_tx("\r\n", 2);
+            tty_tx((uint8_t *)"\r\n", 2);
             break;
         default:
             if (buf_idx < (sizeof(rx_buf) - 1) && c >= ' ' && c <= '~')

@@ -15,5 +15,6 @@ typedef enum
 
 int tty_tx(uint8_t *buf, uint32_t len);
 int tty_rx(uint8_t *buf, uint32_t len);
+void tty_fill_rx_buf(uint8_t *buf, uint32_t len);
 
 #endif /* TTY_H_ */

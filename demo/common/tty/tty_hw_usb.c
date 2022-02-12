@@ -5,11 +5,10 @@
 
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
-uint8_t tty_hw_tx(uint8_t *buf, uint32_t len)
+void tty_hw_tx(uint8_t *buf, uint32_t len)
 {
     uint8_t rc;
     while ((rc = CDC_Transmit_FS(buf, len)) == USBD_BUSY);
-    return rc;
 }
 
 void tty_hw_fill_rx_buf(uint8_t *buf, uint32_t len)
