@@ -26,7 +26,6 @@ uint8_t tx_buf[TX_BUF_SIZE + 1];
 uint8_t rx_buf[RX_BUF_SIZE];
 int rx_put_idx = 0;
 int rx_get_idx = 0;
-int print_prompt = 1;
 
 #define RX_BUF_PUT(c) rx_buf[rx_put_idx] = c; rx_put_idx = (rx_put_idx + 1) % sizeof(rx_buf);
 
@@ -55,12 +54,6 @@ int tty_tx(uint8_t *buf, uint32_t len)
 int tty_rx(uint8_t *ptr, uint32_t len)
 {
     int len_rx;
-
-    if (mode == TTY_MODE_LINE && rx_get_idx == rx_put_idx && print_prompt)
-    {
-        //tty_tx(">", 1);
-        print_prompt = 0;
-    }
 
     for (len_rx = 0; len_rx < len; len_rx++)
     {
@@ -139,7 +132,6 @@ void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
             rx_put_idx = (rx_put_idx + buf_idx) % sizeof(rx_buf);
             buf_idx = 0;
             tty_tx("\r\n", 2);
-            print_prompt = 1;
             break;
         default:
             if (buf_idx < (MAX_LINE_SIZE - 1) && c >= ' ' && c <= '~')
