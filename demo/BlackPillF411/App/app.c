@@ -6,29 +6,31 @@
 void app_init(void)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
-	puts("\nTinyCLI Demo\n");
+	puts("\n\nTinyCLI Demo\n\n");
 }
 
 void app_run(void)
 {
     int rc;
     char buf[128];
-    static int need_prompt = 1;
+    static int print_prompt = 1;
 
-    if (need_prompt)
+    if (print_prompt)
     {
         putchar('>');
-        need_prompt = 0;
+        print_prompt = 0;
     }
-
     if (fgets((char *)&buf[0], sizeof(buf), stdin) == NULL)
     {
         return;
     }
 
-    rc = tcli_cmd_handle(buf);
-    puts(tcli_error(rc));
-    need_prompt = 1;
+    if (buf[0])
+    {
+        rc = tcli_cmd_handle(buf);
+        puts(tcli_error(rc));
+    }
+    print_prompt = 1;
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)

@@ -20,7 +20,7 @@ typedef enum
     TTY_MODE_LINE
 } tty_mode_t;
 
-//int tty_tx(uint8_t *buf, uint32_t len);
-//int tty_rx(uint8_t *buf, uint32_t len);
+int tty_tx(uint8_t *buf, uint32_t len);
+int tty_rx(uint8_t *buf, uint32_t len);
 
 #endif /* TTY_H_ */
