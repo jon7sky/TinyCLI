@@ -1,16 +1,35 @@
 #include <stdio.h>
-#include "term.h"
 #include "main.h"
 #include "tcli.h"
 
 void app_init(void)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
-	puts("\nTinyCLI Demo\n");
+	puts("\n\nTinyCLI Demo");
 }
 
 void app_run(void)
 {
+    int rc;
+    char buf[128];
+    static int print_prompt = 1;
+
+    if (print_prompt)
+    {
+        putchar('>');
+        print_prompt = 0;
+    }
+    if (fgets((char *)&buf[0], sizeof(buf), stdin) == NULL)
+    {
+        return;
+    }
+
+    if (buf[0])
+    {
+        rc = tcli_cmd_handle(buf);
+        puts(tcli_error(rc));
+    }
+    print_prompt = 1;
 }
 
 void term_cmd_exe(char *buf)

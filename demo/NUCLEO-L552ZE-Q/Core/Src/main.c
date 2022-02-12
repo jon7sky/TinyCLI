@@ -23,8 +23,8 @@
 /* USER CODE BEGIN Includes */
 
 #include "app.h"
-#include "stdio_uart.h"
-#include "term.h"
+//#include "tty_hw_uart.h"
+// #include "term.h"
 
 /* USER CODE END Includes */
 
@@ -107,8 +107,7 @@ int main(void)
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  stdio_uart_init(&hlpuart1);
-  term_init();
+  tty_hw_uart_init(&hlpuart1);
   app_init();
 
   /* USER CODE END 2 */
@@ -117,7 +116,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	term_run();
 	app_run();
     /* USER CODE END WHILE */
 

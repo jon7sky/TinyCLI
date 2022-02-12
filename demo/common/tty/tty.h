@@ -1,10 +1,3 @@
-/*
- * tty.h
- *
- *  Created on: Feb 6, 2022
- *      Author: john
- */
-
 #ifndef TTY_H_
 #define TTY_H_
 

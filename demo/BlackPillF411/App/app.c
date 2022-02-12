@@ -6,7 +6,7 @@
 void app_init(void)
 {
 	setvbuf(stdout, NULL, _IONBF, 0);
-	puts("\n\nTinyCLI Demo\n\n");
+	puts("\n\nTinyCLI Demo");
 }
 
 void app_run(void)
