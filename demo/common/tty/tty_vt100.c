@@ -4,6 +4,7 @@
 
 #define TX_BUF_SIZE     32
 #define RX_BUF_SIZE     128
+#define HW_RX_BUF_SIZE  32
 
 typedef enum
 {
@@ -21,12 +22,17 @@ enum
     ASCII_DEL = 127,
 };
 
-uint8_t tx_buf[TX_BUF_SIZE + 1];
-uint8_t rx_buf[RX_BUF_SIZE];
-int rx_put_idx = 0;
-int rx_get_idx = 0;
+static uint8_t tx_buf[TX_BUF_SIZE + 1];
+static uint8_t rx_buf[RX_BUF_SIZE];
+static uint8_t hw_rx_buf[HW_RX_BUF_SIZE];
+static int rx_put_idx = 0;
+static int rx_get_idx = 0;
+static int hw_rx_put_idx = 0;
+static int hw_rx_get_idx = 0;
 
 #define RX_BUF_PUT(c) if (rx_put_idx < (sizeof(rx_buf) - 1)) rx_buf[rx_put_idx++] = c;
+
+static void process_rx_buf(void);
 
 static tty_mode_t mode = TTY_MODE_LINE;
 
@@ -54,6 +60,7 @@ int tty_rx(uint8_t *ptr, uint32_t len)
 {
     int len_rx;
 
+    process_rx_buf();
     for (len_rx = 0; len_rx < len; len_rx++)
     {
         if (rx_get_idx >= rx_put_idx)
@@ -70,13 +77,23 @@ int tty_rx(uint8_t *ptr, uint32_t len)
 
 void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
 {
+    while (len--)
+    {
+        hw_rx_buf[hw_rx_put_idx] = *buf;
+        hw_rx_put_idx = (hw_rx_put_idx + 1) % sizeof(hw_rx_buf);
+    }
+}
+
+static void process_rx_buf(void)
+{
     static state_t state = STATE_CHAR;
     uint8_t c;
     static int buf_idx = 0;
 
-    while (len--)
+    while (hw_rx_get_idx != hw_rx_put_idx)
     {
-        c = *buf++;
+        c = hw_rx_buf[hw_rx_get_idx];
+        hw_rx_get_idx = (hw_rx_get_idx + 1) % sizeof(hw_rx_buf);
 
         // If raw mode, just insert the character into the buffer as-is.
         if (mode == TTY_MODE_RAW)
