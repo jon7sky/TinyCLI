@@ -61,7 +61,7 @@ void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
 {
     while (len--)
     {
-        hw_rx_buf[hw_rx_put_idx] = *buf;
+        hw_rx_buf[hw_rx_put_idx] = *buf++;
         hw_rx_put_idx = (hw_rx_put_idx + 1) % sizeof(hw_rx_buf);
     }
 }

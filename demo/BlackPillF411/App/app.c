@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "main.h"
 #include "tcli.h"
+#include "tty.h"
 
 void app_init(void)
 {
@@ -10,26 +11,17 @@ void app_init(void)
 
 void app_run(void)
 {
+    static char buf[128];
     int rc;
-    char buf[128];
-    static int print_prompt = 1;
 
-    if (print_prompt)
+    if (tty_getline(&buf[0], sizeof(buf)) != EOF)
     {
-        putchar('>');
-        print_prompt = 0;
+        if (buf[0])
+        {
+            rc = tcli_cmd_handle(&buf[0]);
+            puts(tcli_error(rc));
+        }
     }
-    if (fgets((char *)&buf[0], sizeof(buf), stdin) == NULL)
-    {
-        return;
-    }
-
-    if (buf[0])
-    {
-        rc = tcli_cmd_handle(buf);
-        puts(tcli_error(rc));
-    }
-    print_prompt = 1;
 }
 
 int tcli_cmd_handle_led(tcli_args_led_t *args)
