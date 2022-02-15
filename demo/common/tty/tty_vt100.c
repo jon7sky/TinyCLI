@@ -7,10 +7,10 @@
 
 #define VT100_CURSOR_BOL        "\033[999D"
 #define VT100_CURSOR_EOL        "\033[999C"
-#define VT100_CURSOR_UP         "\033[%dA"
-#define VT100_CURSOR_DOWN       "\033[%dB"
-#define VT100_CURSOR_RIGHT      "\033[%dC"
-#define VT100_CURSOR_LEFT       "\033[%dD"
+#define VT100_CURSOR_UP         "\033[A"
+#define VT100_CURSOR_DOWN       "\033[B"
+#define VT100_CURSOR_RIGHT      "\033[C"
+#define VT100_CURSOR_LEFT       "\033[D"
 #define VT100_ERASE_EOS         "\033[0J"
 #define VT100_ERASE_EOL         "\033[0K"
 #define VT100_SAVE_CURSOR       "\0337"
@@ -55,6 +55,14 @@ int tty_tx(uint8_t *buf, uint32_t len)
         }
     }
     return len;
+}
+
+static void tty_puts(const void *str)
+{
+	int i;
+	uint8_t *p = (uint8_t *)str;
+	for (i = 0; p[i]; i++);
+	tty_hw_tx(p, i);
 }
 
 void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
@@ -134,30 +142,29 @@ int tty_getline(char *buf, int buf_len)
                 {
                     buf[i] = buf[i+1];
                 }
-                tty_tx("\033[D\0337", 5);
-                tty_tx(&buf[cursor_idx], buf_idx - cursor_idx);
-                tty_tx(" \0338", 3);
+                tty_puts(VT100_CURSOR_LEFT VT100_SAVE_CURSOR);
+                tty_puts(&buf[cursor_idx]);
+                tty_puts(VT100_ERASE_EOL VT100_RESTORE_CURSOR);
             }
             break;
         case ASCII_CR:
-            buf[buf_idx++] = 0;
             rc = buf_idx;
             buf_idx = -1;
             cursor_idx = 0;
-            tty_tx((uint8_t *)"\r\n", 2);
+            tty_puts("\r\n");
             break;
         case KEY_LEFT:
             if (cursor_idx > 0)
             {
                 cursor_idx--;
-                tty_tx("\033[D", 3);
+                tty_puts(VT100_CURSOR_LEFT);
             }
             break;
         case KEY_RIGHT:
             if (cursor_idx < buf_idx)
             {
                 cursor_idx++;
-                tty_tx("\033[C", 3);
+                tty_puts(VT100_CURSOR_RIGHT);
             }
             break;
         default:
@@ -169,9 +176,10 @@ int tty_getline(char *buf, int buf_len)
                 }
                 buf[cursor_idx] = c;
                 buf_idx++;
-                tty_tx("\0337", 2);
-                tty_tx((uint8_t *)&buf[cursor_idx], buf_idx - cursor_idx);
-                tty_tx("\0338\033[C", 5);
+                buf[buf_idx] = 0;
+                tty_puts(VT100_SAVE_CURSOR);
+                tty_puts(&buf[cursor_idx]);
+                tty_puts(VT100_RESTORE_CURSOR VT100_CURSOR_RIGHT);
                 cursor_idx++;
             }
             break;
