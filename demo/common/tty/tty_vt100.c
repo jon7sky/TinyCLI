@@ -114,16 +114,16 @@ int tty_getkey(void)
 
 int tty_getline(char *buf, int buf_len)
 {
-    static int buf_idx = -1;
+    static int buf_end_idx = -1;
     static int cursor_idx = 0;
     int c;
     int rc = EOF;
     int i;
 
-    if (buf_idx < 0)
+    if (buf_end_idx < 0)
     {
-        buf_idx = 0;
-        buf[buf_idx] = 0;
+        buf_end_idx = 0;
+        buf[buf_end_idx] = 0;
         tty_tx((uint8_t *)">", 1);
     }
 
@@ -134,18 +134,18 @@ int tty_getline(char *buf, int buf_len)
         case ASCII_BS:
             if (cursor_idx > 0)
             {
-                buf_idx--;
+                buf_end_idx--;
                 cursor_idx--;
-                buf[buf_idx] = 0;
-                for (i = cursor_idx; i < buf_idx; buf[i] = buf[i+1], i++);
+                buf[buf_end_idx] = 0;
+                for (i = cursor_idx; i < buf_end_idx; buf[i] = buf[i+1], i++);
                 tty_puts(VT100_CURSOR_LEFT VT100_SAVE_CURSOR);
                 tty_puts(&buf[cursor_idx]);
                 tty_puts(VT100_ERASE_EOL VT100_RESTORE_CURSOR);
             }
             break;
         case ASCII_CR:
-            rc = buf_idx;
-            buf_idx = -1;
+            rc = buf_end_idx;
+            buf_end_idx = -1;
             cursor_idx = 0;
             tty_puts("\r\n");
             break;
@@ -157,18 +157,18 @@ int tty_getline(char *buf, int buf_len)
             }
             break;
         case KEY_RIGHT:
-            if (cursor_idx < buf_idx)
+            if (cursor_idx < buf_end_idx)
             {
                 cursor_idx++;
                 tty_puts(VT100_CURSOR_RIGHT);
             }
             break;
         default:
-            if (buf_idx < (buf_len - 1) && c >= ' ' && c <= '~')
+            if (buf_end_idx < (buf_len - 1) && c >= ' ' && c <= '~')
             {
-                for (i = buf_idx; i > cursor_idx; buf[i] = buf[i-1], i--);
-                buf_idx++;
-                buf[buf_idx] = 0;
+                for (i = buf_end_idx; i > cursor_idx; buf[i] = buf[i-1], i--);
+                buf_end_idx++;
+                buf[buf_end_idx] = 0;
                 buf[cursor_idx] = c;
                 tty_puts(VT100_SAVE_CURSOR);
                 tty_puts(&buf[cursor_idx]);
