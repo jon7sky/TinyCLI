@@ -5,6 +5,17 @@
 #define TX_BUF_SIZE     32
 #define HW_RX_BUF_SIZE  32
 
+#define VT100_CURSOR_BOL        "\033[999D"
+#define VT100_CURSOR_EOL        "\033[999C"
+#define VT100_CURSOR_UP         "\033[%dA"
+#define VT100_CURSOR_DOWN       "\033[%dB"
+#define VT100_CURSOR_RIGHT      "\033[%dC"
+#define VT100_CURSOR_LEFT       "\033[%dD"
+#define VT100_ERASE_EOS         "\033[0J"
+#define VT100_ERASE_EOL         "\033[0K"
+#define VT100_SAVE_CURSOR       "\0337"
+#define VT100_RESTORE_CURSOR    "\0338"
+
 typedef enum
 {
     STATE_CHAR,
@@ -99,8 +110,10 @@ int tty_getkey(void)
 int tty_getline(char *buf, int buf_len)
 {
     static int buf_idx = -1;
+    static int cursor_idx = 0;
     int c;
     int rc = EOF;
+    int i;
 
     if (buf_idx < 0)
     {
@@ -113,23 +126,53 @@ int tty_getline(char *buf, int buf_len)
         switch (c)
         {
         case ASCII_BS:
-            if (buf_idx > 0)
+            if (cursor_idx > 0)
             {
                 buf_idx--;
-                tty_tx((uint8_t *)"\010 \010", 3);
+                cursor_idx--;
+                for (i = cursor_idx; i < buf_idx; i++)
+                {
+                    buf[i] = buf[i+1];
+                }
+                tty_tx("\033[D\0337", 5);
+                tty_tx(&buf[cursor_idx], buf_idx - cursor_idx);
+                tty_tx(" \0338", 3);
             }
             break;
         case ASCII_CR:
             buf[buf_idx++] = 0;
             rc = buf_idx;
             buf_idx = -1;
+            cursor_idx = 0;
             tty_tx((uint8_t *)"\r\n", 2);
+            break;
+        case KEY_LEFT:
+            if (cursor_idx > 0)
+            {
+                cursor_idx--;
+                tty_tx("\033[D", 3);
+            }
+            break;
+        case KEY_RIGHT:
+            if (cursor_idx < buf_idx)
+            {
+                cursor_idx++;
+                tty_tx("\033[C", 3);
+            }
             break;
         default:
             if (buf_idx < (buf_len - 1) && c >= ' ' && c <= '~')
             {
-                buf[buf_idx++] = c;
-                tty_tx((uint8_t *)&c, sizeof(c));
+                for (i = buf_idx; i > cursor_idx; i--)
+                {
+                    buf[i] = buf[i-1];
+                }
+                buf[cursor_idx] = c;
+                buf_idx++;
+                tty_tx("\0337", 2);
+                tty_tx((uint8_t *)&buf[cursor_idx], buf_idx - cursor_idx);
+                tty_tx("\0338\033[C", 5);
+                cursor_idx++;
             }
             break;
         }
