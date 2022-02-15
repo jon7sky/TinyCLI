@@ -7,14 +7,20 @@
 
 #define VT100_CURSOR_BOL        "\033[999D"
 #define VT100_CURSOR_EOL        "\033[999C"
-#define VT100_CURSOR_UP         "\033[A"
-#define VT100_CURSOR_DOWN       "\033[B"
-#define VT100_CURSOR_RIGHT      "\033[C"
-#define VT100_CURSOR_LEFT       "\033[D"
+#define VT100_CURSOR_UP         "\033[1A"
+#define VT100_CURSOR_DOWN       "\033[1B"
+#define VT100_CURSOR_RIGHT      "\033[1C"
+#define VT100_CURSOR_LEFT       "\033[1D"
 #define VT100_ERASE_EOS         "\033[0J"
 #define VT100_ERASE_EOL         "\033[0K"
 #define VT100_SAVE_CURSOR       "\0337"
 #define VT100_RESTORE_CURSOR    "\0338"
+
+#define ASCII_BS 	8
+#define ASCII_LF  	10
+#define ASCII_CR 	13
+#define ASCII_ESC 	27
+#define ASCII_DEL 	127
 
 typedef enum
 {
@@ -23,19 +29,18 @@ typedef enum
     STATE_GOT_ESC_LB
 } state_t;
 
-enum
-{
-    ASCII_BS = 8,
-    ASCII_LF = 10,
-    ASCII_CR = 13,
-    ASCII_ESC = 27,
-    ASCII_DEL = 127,
-};
-
 static uint8_t tx_buf[TX_BUF_SIZE + 1];
 static uint8_t hw_rx_buf[HW_RX_BUF_SIZE];
 static int hw_rx_put_idx = 0;
 static int hw_rx_get_idx = 0;
+
+static void tty_puts(const void *str)
+{
+	int i;
+	uint8_t *p = (uint8_t *)str;
+	for (i = 0; p[i]; i++);
+	tty_hw_tx(p, i);
+}
 
 int tty_tx(uint8_t *buf, uint32_t len)
 {
@@ -55,14 +60,6 @@ int tty_tx(uint8_t *buf, uint32_t len)
         }
     }
     return len;
-}
-
-static void tty_puts(const void *str)
-{
-	int i;
-	uint8_t *p = (uint8_t *)str;
-	for (i = 0; p[i]; i++);
-	tty_hw_tx(p, i);
 }
 
 void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
@@ -126,6 +123,7 @@ int tty_getline(char *buf, int buf_len)
     if (buf_idx < 0)
     {
         buf_idx = 0;
+        buf[buf_idx] = 0;
         tty_tx((uint8_t *)">", 1);
     }
 
@@ -138,10 +136,8 @@ int tty_getline(char *buf, int buf_len)
             {
                 buf_idx--;
                 cursor_idx--;
-                for (i = cursor_idx; i < buf_idx; i++)
-                {
-                    buf[i] = buf[i+1];
-                }
+                buf[buf_idx] = 0;
+                for (i = cursor_idx; i < buf_idx; buf[i] = buf[i+1], i++);
                 tty_puts(VT100_CURSOR_LEFT VT100_SAVE_CURSOR);
                 tty_puts(&buf[cursor_idx]);
                 tty_puts(VT100_ERASE_EOL VT100_RESTORE_CURSOR);
@@ -170,13 +166,10 @@ int tty_getline(char *buf, int buf_len)
         default:
             if (buf_idx < (buf_len - 1) && c >= ' ' && c <= '~')
             {
-                for (i = buf_idx; i > cursor_idx; i--)
-                {
-                    buf[i] = buf[i-1];
-                }
-                buf[cursor_idx] = c;
+                for (i = buf_idx; i > cursor_idx; buf[i] = buf[i-1], i--);
                 buf_idx++;
                 buf[buf_idx] = 0;
+                buf[cursor_idx] = c;
                 tty_puts(VT100_SAVE_CURSOR);
                 tty_puts(&buf[cursor_idx]);
                 tty_puts(VT100_RESTORE_CURSOR VT100_CURSOR_RIGHT);
