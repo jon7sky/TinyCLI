@@ -3,7 +3,6 @@
 #include "tty_hw.h"
 
 #define TX_BUF_SIZE     32
-#define RX_BUF_SIZE     128
 #define HW_RX_BUF_SIZE  32
 
 typedef enum
@@ -23,18 +22,9 @@ enum
 };
 
 static uint8_t tx_buf[TX_BUF_SIZE + 1];
-static uint8_t rx_buf[RX_BUF_SIZE];
 static uint8_t hw_rx_buf[HW_RX_BUF_SIZE];
-static int rx_put_idx = 0;
-static int rx_get_idx = 0;
 static int hw_rx_put_idx = 0;
 static int hw_rx_get_idx = 0;
-
-#define RX_BUF_PUT(c) if (rx_put_idx < (sizeof(rx_buf) - 1)) rx_buf[rx_put_idx++] = c;
-
-static void process_rx_buf(void);
-
-static tty_mode_t mode = TTY_MODE_LINE;
 
 int tty_tx(uint8_t *buf, uint32_t len)
 {
@@ -56,25 +46,6 @@ int tty_tx(uint8_t *buf, uint32_t len)
     return len;
 }
 
-int tty_rx(uint8_t *ptr, uint32_t len)
-{
-    int len_rx;
-
-    process_rx_buf();
-    for (len_rx = 0; len_rx < len; len_rx++)
-    {
-        if (rx_get_idx >= rx_put_idx)
-        {
-            rx_get_idx = 0;
-            rx_put_idx = 0;
-            break;
-        }
-        *ptr++ = rx_buf[rx_get_idx++];
-    }
-
-    return len_rx ? len_rx : -1;
-}
-
 void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
 {
     while (len--)
@@ -84,60 +55,61 @@ void tty_fill_rx_buf(uint8_t *buf, uint32_t len)
     }
 }
 
-static void process_rx_buf(void)
+int tty_getchar(void)
 {
-    static state_t state = STATE_CHAR;
-    uint8_t c;
-    static int buf_idx = 0;
+    int c = EOF;
 
-    while (hw_rx_get_idx != hw_rx_put_idx)
+    if (hw_rx_get_idx != hw_rx_put_idx)
     {
         c = hw_rx_buf[hw_rx_get_idx];
         hw_rx_get_idx = (hw_rx_get_idx + 1) % sizeof(hw_rx_buf);
+    }
+    return c;
+}
 
-        // If raw mode, just insert the character into the buffer as-is.
-        if (mode == TTY_MODE_RAW)
-        {
-            RX_BUF_PUT(c);
-            continue;
-        }
+int tty_getkey(void)
+{
+    static state_t state = STATE_CHAR;
+    int c;
 
-        // Convert ESC-[ sequences into special key codes.
+    if ((c = tty_getchar()) != EOF)
+    {
         switch (state)
         {
         case STATE_CHAR:
             if (c == ASCII_ESC)
             {
                 state = STATE_GOT_ESC;
-                c = 0;
+                c = EOF;
             }
             break;
         case STATE_GOT_ESC:
             state = (c == '[' ? STATE_GOT_ESC_LB : STATE_CHAR);
-            c = 0;
+            c = EOF;
             break;
         case STATE_GOT_ESC_LB:
-            c = (c >= 'A' && c <= 'D') ? c - 'A' + KEY_UP : 0;
+            c = (c >= 'A' && c <= 'D') ? c - 'A' + KEY_UP : EOF;
             state = STATE_CHAR;
             break;
         }
-        if (c == 0)
-        {
-            continue;
-        }
+    }
+    return c;
+}
 
-        // If key mode, insert char or key code into buffer.
-        if (mode == TTY_MODE_KEY)
-        {
-            RX_BUF_PUT(c);
-            continue;
-        }
+int tty_getline(char *buf, int buf_len)
+{
+    static int buf_idx = -1;
+    int c;
+    int rc = EOF;
 
-        // We're in line mode. If the last line wasn't taken yet, then throw away these characters.
-        if (rx_put_idx > rx_get_idx)
-        {
-            break;
-        }
+    if (buf_idx < 0)
+    {
+        buf_idx = 0;
+        tty_tx((uint8_t *)">", 1);
+    }
+
+    if ((c = tty_getkey()) != EOF)
+    {
         switch (c)
         {
         case ASCII_BS:
@@ -148,20 +120,20 @@ static void process_rx_buf(void)
             }
             break;
         case ASCII_CR:
-            rx_buf[buf_idx++] = 0;
-            rx_put_idx = buf_idx;
-            buf_idx = 0;
+            buf[buf_idx++] = 0;
+            rc = buf_idx;
+            buf_idx = -1;
             tty_tx((uint8_t *)"\r\n", 2);
             break;
         default:
-            if (buf_idx < (sizeof(rx_buf) - 1) && c >= ' ' && c <= '~')
+            if (buf_idx < (buf_len - 1) && c >= ' ' && c <= '~')
             {
-                rx_buf[buf_idx++] = c;
-                tty_tx(&c, sizeof(c));
+                buf[buf_idx++] = c;
+                tty_tx((uint8_t *)&c, sizeof(c));
             }
             break;
         }
     }
 
-    return;
+    return rc;
 }

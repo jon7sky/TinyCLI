@@ -3,7 +3,8 @@
 
 int _read(int file, char *ptr, int len)
 {
-    return tty_rx((uint8_t *)ptr, len);
+    //return tty_rx((uint8_t *)ptr, len);
+    return EOF;
 }
 
 int _write(int file, char *ptr, int len) {
