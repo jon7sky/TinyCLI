@@ -216,3 +216,8 @@ or wait for the button to be pressed.
 And there's also a similar demo that runs on everybody's favorite STM32 board, the Blue Pill. Check out `demo/BluePill`. 
 It also uses the STM32CubeIDE tool to build and load the firmware. The communication is done through the USB port. 
 The Blue Pill initializes the USB port to be a virtual COM port.
+
+### STM32 Black Pill
+
+What's better than a Blue Pill? A Black Pill! There's a demo for that too, the F411 flavor. Check out `demo/BlackPill`.
+Like the Blue Pill demo, communication is done through the USB port using a virtual COM port.
