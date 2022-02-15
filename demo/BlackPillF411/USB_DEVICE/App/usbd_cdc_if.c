@@ -22,7 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "../../common/tty/tty_hw_usb.h"
+#include "tty_hw_usb.h"
 
 /* USER CODE END INCLUDE */
 

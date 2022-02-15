@@ -33,7 +33,7 @@
 		<link>
 			<name>tty</name>
 			<type>2</type>
-			<location>C:/Users/JohnS/Documents/git/TinyCLI/demo/common/tty</location>
+			<locationURI>PARENT-1-PROJECT_LOC/common/tty</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
