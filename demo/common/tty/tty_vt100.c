@@ -1,9 +1,13 @@
 #include <stdint.h>
+#include <string.h>
 #include "tty.h"
 #include "tty_hw.h"
 
 #define TX_BUF_SIZE     32
 #define HW_RX_BUF_SIZE  32
+
+// Set this to 0 for no history buffer support
+#define HIST_BUF_SIZE   1024
 
 #define VT100_CURSOR_BOL        "\033[999D"
 #define VT100_CURSOR_EOL        "\033[999C"
@@ -33,6 +37,10 @@ static uint8_t tx_buf[TX_BUF_SIZE + 1];
 static uint8_t hw_rx_buf[HW_RX_BUF_SIZE];
 static int hw_rx_put_idx = 0;
 static int hw_rx_get_idx = 0;
+
+#if HIST_BUF_SIZE
+static uint8_t hist_buf[HIST_BUF_SIZE] = {0, };
+#endif
 
 static void tty_puts(const void *str)
 {
@@ -112,6 +120,14 @@ int tty_getkey(void)
     return c;
 }
 
+static void draw_buf(char *buf)
+{
+    tty_puts(VT100_CURSOR_BOL);
+    tty_puts(">");
+    tty_puts(VT100_ERASE_EOL);
+    tty_puts(buf);
+}
+
 int tty_getline(char *buf, int buf_len)
 {
     static int buf_end_idx = -1;
@@ -119,12 +135,17 @@ int tty_getline(char *buf, int buf_len)
     int c;
     int rc = EOF;
     int i;
+#if HIST_BUF_SIZE
+    static int hist_buf_idx = -1;
+    int j;
+    int k;
+#endif
 
     if (buf_end_idx < 0)
     {
         buf_end_idx = 0;
         buf[buf_end_idx] = 0;
-        tty_tx((uint8_t *)">", 1);
+        draw_buf(buf);
     }
 
     if ((c = tty_getkey()) != EOF)
@@ -145,6 +166,14 @@ int tty_getline(char *buf, int buf_len)
             break;
         case ASCII_CR:
             rc = buf_end_idx;
+#if HIST_BUF_SIZE
+            if (buf_end_idx++ > 0)
+            {
+                memmove(&hist_buf[buf_end_idx], &hist_buf[0], HIST_BUF_SIZE - buf_end_idx);
+                memcpy(&hist_buf[0], buf, buf_end_idx);
+            }
+            hist_buf_idx = -1;
+#endif
             buf_end_idx = -1;
             cursor_idx = 0;
             tty_puts("\r\n");
@@ -163,6 +192,40 @@ int tty_getline(char *buf, int buf_len)
                 tty_puts(VT100_CURSOR_RIGHT);
             }
             break;
+#if HIST_BUF_SIZE
+        case KEY_DOWN:
+        case KEY_UP:
+            buf_end_idx = cursor_idx = 0;
+            buf[0] = 0;
+            k = hist_buf_idx + (c == KEY_UP ? 1 : -1);
+            //printf("k is %d\n", k);
+            for (i = 0; i < HIST_BUF_SIZE && k > 0 && hist_buf[i]; k--)
+            {
+                for (; i < HIST_BUF_SIZE && hist_buf[i]; i++);
+                i++;
+            }
+            //printf("k is %d\n", k);
+            //printf("i is %d\n", i);
+            if (k == 0)
+            {
+                for (j = 0; i < HIST_BUF_SIZE; i++, j++)
+                {
+                    buf[j] = hist_buf[i];
+                    if (buf[j] == 0)
+                    {
+                        buf_end_idx = cursor_idx = j;
+                        //printf("j is %d\n", j);
+                        break;
+                    }
+                }
+            }
+            draw_buf(buf);
+            if (k >= -1 && k <= 0)
+            {
+                hist_buf_idx += (c == KEY_UP ? 1 : -1);
+            }
+            break;
+#endif
         default:
             if (buf_end_idx < (buf_len - 1) && c >= ' ' && c <= '~')
             {
